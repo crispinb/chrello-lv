@@ -43,3 +43,5 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+console.log(`yer app js is working`)
+
