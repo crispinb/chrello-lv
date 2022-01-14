@@ -1,5 +1,19 @@
 import Config
 
+# see https://hexdocs.pm/tailwind/0.1.4/Tailwind.html
+# & https://tailwindcss.com/docs/configuration
+# & https://fly.io/phoenix-files/tailwind-standalone/
+config :tailwind,
+  version: "3.0.13",
+  default: [
+    args: ~w(
+    --config=tailwind.config.js
+    --input=css/app.css
+    --output=../priv/static/assets/app.css
+  ),
+    cd: Path.expand("../assets", __DIR__)
+  ]
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -16,7 +30,8 @@ config :chrello, ChrelloWeb.Endpoint,
   secret_key_base: "ECSbaVAMH7s1iiRp4ChJ4fsAiWICau9xgARwxLQtHidsRNkJWpJ3Gp5vQeKEfkyO",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support
