@@ -1,6 +1,6 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base; 
+@tailwind components;
+@tailwind utilities;
 
 /* This file is for your main application CSS */
 
@@ -17,7 +17,7 @@
   border-color: #bce8f1;
 }
 .alert-warning {
-  color: #8a6d3b;
+color: #8a6d3b;
   background-color: #fcf8e3;
   border-color: #faebcc;
 }
