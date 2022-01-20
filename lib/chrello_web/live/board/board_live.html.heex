@@ -1,12 +1,18 @@
-<div id="new-card-container" class="flex h-40 p-3 bg-slate-200" phx-hook="dragDropHook">
-    <.live_component module={ChrelloWeb.CardComponent} id="card1" />
-    <.live_component module={ChrelloWeb.CardComponent} id="card2" />
-    <.live_component module={ChrelloWeb.CardComponent} id="card3" />
-    <.live_component module={ChrelloWeb.CardComponent} id="card4" />
-</div>
+<div id="columns-container" class="flex h-screen space-x-10 p-5">
 
-<div id="board-container" class="h-screen grid grid-cols-3 m-4 bg-gray-200 gap-4">
-    <.live_component module={ChrelloWeb.ColumnComponent} id="column1" />
-    <.live_component module={ChrelloWeb.ColumnComponent} id="column2" />
-    <.live_component module={ChrelloWeb.ColumnComponent} id="column3" />
+    <%= for column <- @columns do %>
+            <% IO.inspect(column, label: :rendered_col) %>
+    <div id={"#{column.id}-container"} class="flex-col w-52 bg-slate-100">
+        <%= column.title%>
+        <div id={column.id} class="h-full w-full flex-col space-y-4 p-4 bg-green-100" phx-hook="dragDropHook">
+            <%= for card <- column.cards do %>
+            <.card {Map.from_struct(card)} />
+            <% end %>
+        </div>
+    </div>
+    <% end %>
+
+
+
+
 </div>
