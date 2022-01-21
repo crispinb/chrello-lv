@@ -7,6 +7,10 @@ config :chrello, ChrelloWeb.Endpoint,
   secret_key_base: "3LBl0EcGyYA3fWKFrKj0dCpk17Oe+VkEEoIASj/v1LSJaTXn4ciiiYM3RQGLNbhl",
   server: false
 
+# configures the http/api adapter
+# (MockApi set up in test_helper.exs)
+config :chrello, api_module: Chrello.MockApi
+
 # In test we don't send emails.
 config :chrello, Chrello.Mailer,
   adapter: Swoosh.Adapters.Test

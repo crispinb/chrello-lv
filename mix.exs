@@ -47,6 +47,7 @@ defmodule Chrello.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:tailwind, "~> 0.1.4", only: :dev},
+      {:mox, "~> 1.0", only: [:dev, :test]},
       {:httpoison, "~> 1.8"}
     ]
   end

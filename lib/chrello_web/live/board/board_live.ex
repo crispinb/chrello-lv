@@ -1,8 +1,8 @@
 defmodule ChrelloWeb.BoardLive do
   use ChrelloWeb, :live_view
   import ChrelloWeb.BoardComponents
-  alias Chrello.Card
-  alias Chrello.Column
+  alias Chrello.Board.Card
+  alias Chrello.Board.Column
 
   # colums - name, list of cards
   # card - title,
@@ -16,32 +16,32 @@ defmodule ChrelloWeb.BoardLive do
 
   # TODO: replace with context / data layer fn
   defp get_columns do
-    [
-      %Column{
-        id: "column-1",
-        title: "column 1",
-        cards: [
-          %Card{id: "card-1", title: "card 1", body: "some text on card 1"},
-          %Card{id: "card-2", title: "card 2", body: "some text on card 2"}
-        ]
-      },
-      %Column{
-        id: "column-2",
-        title: "column 2",
-        cards: [
-          %Card{id: "card-3", title: "card 3", body: "some text on card 3"},
-          %Card{id: "card-4", title: "card 4", body: "some text on card 4"}
-        ]
-      },
-      %Column{
-        id: "column-3",
-        title: "column 3",
-        cards: [
-          %Card{id: "card-5", title: "card 5", body: "some text on card 5"},
-          %Card{id: "card-6", title: "card 6", body: "some text on card 6"}
-        ]
-      }
-    ]
+    # [
+    #   %Column{
+    #     id: "column-1",
+    #     title: "column 1",
+    #     cards: [
+    #       %Card{id: "card-1", title: "card 1", body: "some text on card 1"},
+    #       %Card{id: "card-2", title: "card 2", body: "some text on card 2"}
+    #     ]
+    #   },
+    #   %Column{
+    #     id: "column-2",
+    #     title: "column 2",
+    #     cards: [
+    #       %Card{id: "card-3", title: "card 3", body: "some text on card 3"},
+    #       %Card{id: "card-4", title: "card 4", body: "some text on card 4"}
+    #     ]
+    #   },
+    #   %Column{
+    #     id: "column-3",
+    #     title: "column 3",
+    #     cards: [
+    #       %Card{id: "card-5", title: "card 5", body: "some text on card 5"},
+    #       %Card{id: "card-6", title: "card 6", body: "some text on card 6"}
+    #     ]
+    #   }
+    # ]
   end
 
   # {card_id: from: to:}
@@ -66,9 +66,6 @@ defmodule ChrelloWeb.BoardLive do
     columns
   end
 
-  # TODO: this doesn't work - our col calc is right, but the dest column
-  # isn't updated in LiveView. WHY WHY WHY
-  # TODO: also we need to decide if we're using indices or element ids
   def move_card(
         columns,
         %{
@@ -77,7 +74,8 @@ defmodule ChrelloWeb.BoardLive do
         }
       ) do
     # TODO: replace all this crud with Access if possible
-    #   # or some other way? This is ugly and really fucking hard to debug
+    # but best wait for a basic API / model implementation
+    # when we'll know more about the shape of our data
     IO.inspect(columns, label: :cols_in)
 
     {from_col, _} = List.pop_at(columns, from_col_index)

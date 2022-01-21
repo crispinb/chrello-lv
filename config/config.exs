@@ -14,6 +14,9 @@ config :chrello, ChrelloWeb.Endpoint,
   pubsub_server: Chrello.PubSub,
   live_view: [signing_salt: "TINMtgAt"]
 
+# configures the http/api adapter
+config :chrello, api_module: HTTPoison
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
