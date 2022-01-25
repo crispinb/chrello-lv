@@ -9,46 +9,23 @@ defmodule ChrelloWeb.BoardLive do
 
   # does unique column_id here make a case for ecto schema? (with or without backend)
   def mount(_params, _session, socket) do
-    socket = assign_new(socket, :columns, &get_columns/0)
+    socket = assign_new(socket, :board, &get_board/0)
 
     {:ok, socket}
   end
 
   # TODO: replace with context / data layer fn
-  defp get_columns do
-    # [
-    #   %Column{
-    #     id: "column-1",
-    #     title: "column 1",
-    #     cards: [
-    #       %Card{id: "card-1", title: "card 1", body: "some text on card 1"},
-    #       %Card{id: "card-2", title: "card 2", body: "some text on card 2"}
-    #     ]
-    #   },
-    #   %Column{
-    #     id: "column-2",
-    #     title: "column 2",
-    #     cards: [
-    #       %Card{id: "card-3", title: "card 3", body: "some text on card 3"},
-    #       %Card{id: "card-4", title: "card 4", body: "some text on card 4"}
-    #     ]
-    #   },
-    #   %Column{
-    #     id: "column-3",
-    #     title: "column 3",
-    #     cards: [
-    #       %Card{id: "card-5", title: "card 5", body: "some text on card 5"},
-    #       %Card{id: "card-6", title: "card 6", body: "some text on card 6"}
-    #     ]
-    #   }
-    # ]
+    # must return empty list (not nil) if there are no columns
+  defp get_board do
+    Chrello.Api.Client.get_board(774394)
+    |> IO.inspect(label: :board_from_api)
   end
 
   # {card_id: from: to:}
   # from/to: {col: , index:}
   def handle_event("card-dropped", payload, socket) do
     IO.inspect(payload, label: :received_drag_event)
-    socket = assign(socket, columns: card_dropped(socket.assigns.columns, payload))
+    socket = assign(socket, board: card_dropped(socket.assigns.board, payload))
 
     {:noreply, socket}
   end
@@ -75,7 +52,7 @@ defmodule ChrelloWeb.BoardLive do
       ) do
     # TODO: replace all this crud with Access if possible
     # but best wait for a basic API / model implementation
-    # when we'll know more about the shape of our data
+    # when we'll know more about the shape of the data
     IO.inspect(columns, label: :cols_in)
 
     {from_col, _} = List.pop_at(columns, from_col_index)

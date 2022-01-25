@@ -19,6 +19,7 @@ defmodule ChrelloWeb.Router do
 
     get "/", PageController, :index
     live "/board", BoardLive, :index
+    live "/test", TestLive, :index
   end
 
   # Other scopes may use custom stacks.

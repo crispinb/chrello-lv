@@ -15,7 +15,7 @@ config :chrello, ChrelloWeb.Endpoint,
   live_view: [signing_salt: "TINMtgAt"]
 
 # configures the http/api adapter
-config :chrello, api_module: HTTPoison
+config :chrello, api_module: Chrello.Api.Raw
 
 # Configures the mailer
 #

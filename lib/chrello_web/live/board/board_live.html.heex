@@ -1,18 +1,17 @@
-<div id="columns-container" class="flex h-screen space-x-10 p-5">
-
-    <%= for column <- @columns do %>
-            <% IO.inspect(column, label: :rendered_col) %>
-    <div id={"#{column.id}-container"} class="flex-col w-52 bg-slate-100">
-        <%= column.title%>
-        <div id={column.id} class="h-full w-full flex-col space-y-4 p-4 bg-green-100" phx-hook="dragDropHook">
-            <%= for card <- column.cards do %>
-            <.card {Map.from_struct(card)} />
-            <% end %>
+    <h1>Board: <%= @board.name %></h1>
+    <div id="columns-container" class="flex h-screen space-x-10 p-5">
+        <%= for column <- @board.columns do %>
+        <div id={"#{column.id}-container"} class="flex-col w-52 bg-slate-100">
+            <%= column.name%>
+            <div id={column.id} class="h-full w-full flex-col space-y-4 p-4 bg-green-100" phx-hook="dragDropHook">
+                <%= for card <- column.cards do %>
+                <.card {Map.from_struct(card)} />
+                <% end %>
+            </div>
         </div>
+        <% end %>
+
+
+
+
     </div>
-    <% end %>
-
-
-
-
-</div>

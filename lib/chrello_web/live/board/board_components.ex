@@ -11,7 +11,7 @@ defmodule ChrelloWeb.BoardComponents do
         <%= @title %>
       </div>
       <div id="card-body" >
-        <%= @body %>
+        <%= @content %>
       </div>
     </div>
     """
