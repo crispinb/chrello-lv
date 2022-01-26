@@ -4,29 +4,19 @@ defmodule Chrello.Api.Client.Test do
 
   setup do
     :verify_on_exit!
+    context = Map.merge(TestUtil.load_data(), %{api_token: "token"})
 
-    list_data = %{
-      body:
-        File.read!("test/data/list.json")
-        |> Jason.decode!()
-    }
-
-    items_data = %{
-      body:
-        File.read!("test/data/tasks.json")
-        |> Jason.decode!()
-    }
-
-    {:ok, list_data: list_data, items_data: items_data}
+    {:ok, context}
   end
 
   # Not much here yet, but sets a basis as we add functionality
-  test "get board via api", %{items_data: items, list_data: list} do
+  test "get board", %{items: items, lists: lists, api_token: token} do
     Chrello.MockApi
-    |> expect(:get!, fn "/1.json" -> list end)
-    |> expect(:get!, fn "/1/tasks.json" -> items end)
+    |> expect(:get!, fn "/checklists/1.json", _token -> lists end)
+    |> expect(:get!, fn "/checklists/1/tasks.json", _token -> items end)
 
-    board = Chrello.Api.Client.get_board(1)
+    board = Chrello.Api.Client.get_board(1, token)
+
     assert(board.name == "devtest")
 
     assert(
@@ -35,12 +25,12 @@ defmodule Chrello.Api.Client.Test do
     )
   end
 
-  test "tasks at levels below 2nd are ignored", %{items_data: items, list_data: list} do
+  test "tasks at levels below 2nd are ignored", %{items: items, lists: lists, api_token: token} do
     Chrello.MockApi
-    |> expect(:get!, fn "/1.json" -> list end)
-    |> expect(:get!, fn "/1/tasks.json" -> items end)
+    |> expect(:get!, fn "/checklists/1.json", [_headers] -> lists end)
+    |> expect(:get!, fn "/checklists/1/tasks.json", [_headers] -> items end)
 
-    board = Chrello.Api.Client.get_board(1)
+    board = Chrello.Api.Client.get_board(1, token)
 
     cards =
       board.columns
@@ -48,4 +38,12 @@ defmodule Chrello.Api.Client.Test do
 
     assert(length(cards) == 5, "there are 5 2nd level Checkvist tasks (ie. Chrello cards)")
   end
+
+  test "create a user with valid token"
+
+  test "api uses the token we send"
+
+  test "move task within column"
+
+  test "move task between columns"
 end

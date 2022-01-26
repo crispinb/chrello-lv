@@ -14,10 +14,18 @@ defmodule ChrelloWeb.BoardLive do
     {:ok, socket}
   end
 
+  # move to plug? Which puts the auth_token in an httponly cookie, or
+  # redirects to a login page
+  defp temp_auth_token(socket) do
+    if socket.assigns.checkvist_auth_token do
+    else
+    end
+  end
+
   # TODO: replace with context / data layer fn
-    # must return empty list (not nil) if there are no columns
+  # must return empty list (not nil) if there are no columns
   defp get_board do
-    Chrello.Api.Client.get_board(774394)
+    Chrello.Api.Client.get_board(774_394, "6BLQ71p8wTaKXCH8nuaVOjsNzkSWJX")
     |> IO.inspect(label: :board_from_api)
   end
 

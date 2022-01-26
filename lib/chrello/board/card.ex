@@ -7,6 +7,6 @@ defmodule Chrello.Board.Card do
   def new(%{"id" => id, "content" => content}) do
     # TODO: summarise? (must be an api I can use)
     title = Enum.join(Enum.take(String.split(content), 3), " ")
-     %__MODULE__{id: id, content: content, title: title}
+    %__MODULE__{id: id, content: content, title: title}
   end
 end

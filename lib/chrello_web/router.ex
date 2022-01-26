@@ -1,5 +1,6 @@
 defmodule ChrelloWeb.Router do
   use ChrelloWeb, :router
+  alias ChrelloWeb.Plug.GetUser
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -15,11 +16,19 @@ defmodule ChrelloWeb.Router do
   end
 
   scope "/", ChrelloWeb do
-    pipe_through :browser
+    pipe_through [:browser]
 
     get "/", PageController, :index
-    live "/board", BoardLive, :index
     live "/test", TestLive, :index
+    get "/login", LoginController, :index
+    post "/login", LoginController, :login
+  end
+
+  # authenticated routes (ie. checkvist auth token)
+  scope "/", ChrelloWeb do
+    pipe_through [:browser, GetUser]
+
+    live "/board", BoardLive, :index
   end
 
   # Other scopes may use custom stacks.

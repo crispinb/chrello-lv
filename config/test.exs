@@ -12,8 +12,7 @@ config :chrello, ChrelloWeb.Endpoint,
 config :chrello, api_module: Chrello.MockApi
 
 # In test we don't send emails.
-config :chrello, Chrello.Mailer,
-  adapter: Swoosh.Adapters.Test
+config :chrello, Chrello.Mailer, adapter: Swoosh.Adapters.Test
 
 # Print only warnings and errors during test
 config :logger, level: :warn

@@ -48,7 +48,10 @@ defmodule Chrello.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:tailwind, "~> 0.1.4", only: :dev},
       {:mox, "~> 1.0", only: [:dev, :test]},
-      {:httpoison, "~> 1.8"}
+      {:httpoison, "~> 1.8"},
+      {:dialyxir, "~> 1.1", only: :dev, runtime: false},
+      {:mix_test_watch, "~> 1.1", only: [:test, :dev]},
+      {:credo, "~>1.6", only: [:dev, :test]}
     ]
   end
 
