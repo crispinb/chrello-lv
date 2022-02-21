@@ -53,7 +53,7 @@ defmodule Chrello.MixProject do
       {:mox, "~> 1.0", only: [:test]},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
       # dev iex was running tests - something to do with this?
-      # {:mix_test_watch, "~> 1.1", only: [:test, :dev]},
+      {:mix_test_watch, "~> 1.1", only: [:dev], runtime: false},
       {:credo, "~>1.6", only: [:dev, :test], runtime: false},
       {:credo_naming, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
