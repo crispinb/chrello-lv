@@ -7,15 +7,14 @@
 # General application configuration
 import Config
 
+config :chrello, :checkvist_endpoint_helper, Chrello.Api.CheckvistEndpoint
+
 # Configures the endpoint
 config :chrello, ChrelloWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [view: ChrelloWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Chrello.PubSub,
   live_view: [signing_salt: "TINMtgAt"]
-
-# configures the http/api adapter
-config :chrello, api_module: Chrello.Api.Raw
 
 # Configures the mailer
 #

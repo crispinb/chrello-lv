@@ -1,29 +1,14 @@
 ExUnit.start()
 
-# TODO: not sure where else to put this ?
-defmodule TestUtil do
-  def load_data() do
-    list_data = %{
-      status_code: 200,
-      body:
-        File.read!("test/data/list.json")
-        |> Jason.decode!()
-    }
+Mox.defmock(Chrello.Api.TestEndpoint, for: Chrello.Api.Endpoint)
+Application.put_env(:chrello, :checkvist_endpoint_helper, Chrello.Api.TestEndpoint)
 
-    items_data = %{
-      status_code: 200,
-      body:
-        File.read!("test/data/tasks.json")
-        |> Jason.decode!()
-    }
-
-    user_data = %{
-      status_code: 200,
-      body:
-        File.read!("test/data/user.json")
-        |> Jason.decode!()
-    }
-
-    %{lists: list_data, items: items_data, user: user_data}
+# see https://github.com/dashbitco/bytepack_archive/blob/main/apps/bytepack/test/support/stripe_helpers.ex
+defmodule Checkvist.EndpointHelper do
+  def bypass_checkvist do
+    bypass = Bypass.open()
+    url = "http://localhost:#{bypass.port}"
+    Mox.stub(Chrello.Api.TestEndpoint, :get, fn -> url end)
+    bypass
   end
 end

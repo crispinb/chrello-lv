@@ -25,7 +25,8 @@ defmodule Chrello.MixProject do
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/test_data"]
+  defp elixirc_paths(:dev), do: ["lib", "test/test_data"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
@@ -46,12 +47,15 @@ defmodule Chrello.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:tailwind, "~> 0.1.4", only: :dev},
-      {:mox, "~> 1.0", only: [:dev, :test]},
       {:httpoison, "~> 1.8"},
+      {:tailwind, "~> 0.1.4", only: :dev},
+      {:bypass, "~> 2.1", only: [:dev, :test]},
+      {:mox, "~> 1.0", only: [:test]},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
-      {:mix_test_watch, "~> 1.1", only: [:test, :dev]},
-      {:credo, "~>1.6", only: [:dev, :test]}
+      # dev iex was running tests - something to do with this?
+      # {:mix_test_watch, "~> 1.1", only: [:test, :dev]},
+      {:credo, "~>1.6", only: [:dev, :test], runtime: false},
+      {:credo_naming, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
