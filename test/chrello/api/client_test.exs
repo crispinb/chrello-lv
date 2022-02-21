@@ -16,16 +16,35 @@ defmodule Chrello.Api.ClientTest do
       Plug.Conn.resp(conn, 200, Chrello.TestData.Load.tasks())
     end)
 
-    {:ok, %{api_token: "token"}}
+    Bypass.stub(bypass, "GET", "/checklists/2.json", fn conn ->
+      Plug.Conn.resp(conn, 404, Jason.encode!(%{error: "not found!"}))
+    end)
+
+    {:ok, %{api_token: "token", bypass: bypass}}
   end
 
   test "get board", %{api_token: token} do
-    board = Client.get_board(1, token)
+    {:ok, board} = Client.get_board(1, token)
 
     assert(board.name == "devtest")
-
-    assert(length(board.columns) == 3)
+    assert(board.id == 774_394)
   end
+
+  test "get board, network unavailable", %{api_token: token, bypass: bypass} do
+    Bypass.down(bypass)
+
+    {:network_error, reason} = Client.get_board(1, token)
+    assert(is_bitstring(reason))
+  end
+
+  test "get board, 404 error", %{api_token: token} do
+    {:http_error, {code, _description}} = Client.get_board(2, token)
+    assert(code == 404)
+  end
+
+  # test unhappy path
+
+  # test the card containment
 
   # test "change card position (same parent)" do
 

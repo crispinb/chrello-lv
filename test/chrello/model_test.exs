@@ -1,25 +1,30 @@
 defmodule Chrello.ModelTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   alias Chrello.Model.{Board, Card}
 
   # tests of functions converting between model & checkvist API format
   # No need for any indirection here. We're never going to pair the model
-  # with a different back end
+  # with a different back end, so Model can handle the conversions
 
-  # probably remove this test
   test "board from checkvist List json" do
     list = Chrello.TestData.Load.list()
-    board = Board.new(Jason.decode!(list))
+    tasks = Chrello.TestData.Load.tasks()
+    cards = Card.get_cards_from_task_list(Jason.decode!(tasks))
+    board = Board.new(Jason.decode!(list), cards)
 
     assert(board.id == 774_394)
     assert(board.name == "devtest")
-    assert(board.item_count == 5)
+    assert(board.current_path == [])
+    assert(is_map(board.cards))
+    nested_card = board.cards[2].children[1]
+    assert(is_struct(nested_card))
+    assert(nested_card.title == "task2.1")
   end
 
   test "card tree from 'tasks.json'" do
     tasks = Chrello.TestData.Load.tasks()
     card_tree = Card.get_cards_from_task_list(Jason.decode!(tasks))
-
 
     assert(is_map(card_tree))
     # 3 cards @ top level
@@ -29,7 +34,7 @@ defmodule Chrello.ModelTest do
     # Task 1 should be a leaf node
     task1_children = card_tree[1].children
     assert(is_map(task1_children))
-    assert(Enum.count(task1_children) == 0)
+    assert(Enum.empty?(task1_children))
     task3_children = card_tree[3].children
     assert(Enum.count(task3_children) == 3)
     task3_3_1_children = task3_children[3].children[1].children
@@ -37,10 +42,16 @@ defmodule Chrello.ModelTest do
     assert(task3_3_1_children[1].title == "task 3.3.1.1")
   end
 
-  # 1. assemble columns from top level
-  # 2 what would it take to start from next level down?
-  # test "columns from checkvist 'tasks.json'" do
-  # end
+# TODO: first get board & cards working
+# TODO: then retrofit client & client_test
+
+# new board strategy
+# no columns
+# instead a board has cards (map thereof)
+# and a 'current card' which is a list of integer keys
+# representing the Access path through the maps
+# to the top level map of cards
+
 
   # test "card from checkvist 'taskNNN.json'"
 

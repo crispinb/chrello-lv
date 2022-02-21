@@ -11,12 +11,14 @@ defmodule Chrello.Api.Client do
 
   3rd level and below Checkvist tasks are currently ignored
 
+  Errors are:
+    {:http_error, {status_code, description (string)}}
+    {:network_error, reason (string)}
+
   """
   use HTTPoison.Base
   alias Chrello.Model.Board
-  alias Chrello.Model.Column
   alias Chrello.Model.Card
-  alias Chrello.Util.MapUtil
 
   @request_headers_base [{"Content-Type", "application/json"}]
 
@@ -42,31 +44,40 @@ defmodule Chrello.Api.Client do
     |> Jason.decode!()
   end
 
-  # TODO: replace all raises with error tuples?
+  # TODO: make errors consistent
 
-  @spec get_board(integer, String.t()) :: Chrello.Model.Board.t()
+  @spec get_board(integer, String.t()) :: {:ok, Chrello.Model.Board.t()} | {:error, any()}
   def get_board(board_id, api_token) when is_integer(board_id) do
-    response =
-      get!(
-        "/checklists/#{board_id}.json",
-        [client_token_header(api_token)]
-      )
+    with {:ok, response} when response.status_code == 200 <-
+           get("/checklists/#{board_id}.json", [client_token_header(api_token)]),
+         {:ok, tasks} <- get_tasks(board_id, api_token) do
+      {:ok, Board.new(response.body, tasks)}
+    else
+      # http error
+      {:ok, response} when response.status_code != 200 ->
+        error(response)
 
-    case response.status_code do
-      200 ->
-        board = Board.new(response.body)
-        columns = get_columns!(board_id, api_token)
-        %Board{board | columns: columns}
-
-      error_code ->
-        raise "#{error_code} error: #{response.body["message"]}"
+      # network error
+      {:error, %HTTPoison.Error{} = error} ->
+        error(error)
     end
   end
 
-  defp client_token_header(token) do
-    {"X-Client-Token", token}
+  def get_current_user(token) do
+    case get("/auth/curr_user.json", [client_token_header(token)]) do
+      {:ok, response} when response.status_code == 200 ->
+        user = Chrello.User.new(response.body)
+        {:ok, user}
+
+      {:ok, response} ->
+        error(response)
+
+      {:error, error} ->
+        error(error)
+    end
   end
 
+  # TODO: where is this to be used?
   def get_auth_token!(username, api_key) do
     response =
       request!(
@@ -78,67 +89,42 @@ defmodule Chrello.Api.Client do
         }
       )
 
+    # TODO: replace with new  err handling approach
     case response.status_code do
       200 -> response.body["token"]
       _ -> raise "#{response.status_code} error: #{response.body["message"]}"
     end
   end
 
-  def get_current_user(token) do
-    response =
-      get!(
-        "/auth/curr_user.json",
-        [client_token_header(token)]
-      )
-
-    case response.status_code do
-      200 ->
-        user = Chrello.User.new(response.body)
-        {:ok, user}
-
-      _ ->
-        {:error, "#{response.status_code} error: #{response.body["message"]}"}
-    end
-  end
-
   def refresh_auth_token(old_token) do
-    response =
-      request!(
-        :get,
-        "/auth/refresh_token.json?version=2",
-        %{
-          old_token: old_token
-        }
-      )
-
-    case response.status_code do
-      200 -> {:ok, response.body["token"]}
-      _ -> {:error, "#{response.status_code} error: #{response.body["message"]}"}
+    case request(:get, "/auth/refresh_token.json?version=2", %{old_token: old_token}) do
+      {:ok, response} when response.status_code == 200 -> {:ok, response.body["token"]}
+      {:ok, response} -> error(response)
+      {:error, error} -> error(error)
     end
   end
 
-  defp get_columns!(list_id, api_token) when is_integer(list_id) do
-    list_tasks = get!("/checklists/#{list_id}/tasks.json", [client_token_header(api_token)]).body
-
-    list_tasks
-    |> Enum.filter(fn t -> t["parent_id"] == 0 end)
-    |> Enum.map(&MapUtil.rename_keys(&1, %{"content" => "name"}))
-    |> Enum.map(&Column.new(&1))
-    |> Enum.map(fn col ->
-      %Column{col | cards: get_child_cards(col, list_tasks)}
-    end)
+  defp get_tasks(list_id, api_token) when is_integer(list_id) do
+    case get("/checklists/#{list_id}/tasks.json", [client_token_header(api_token)]) do
+      {:ok, response} -> {:ok, Card.get_cards_from_task_list(response.body)}
+      err -> err
+    end
   end
 
-  defp get_child_cards(column, tasks) do
-    tasks
-    |> Enum.filter(fn t -> t["parent_id"] == column.id end)
-    |> Enum.map(&Card.new(&1))
+  # create a network error
+  defp error(%HTTPoison.Error{} = error) do
+    {:network_error, Atom.to_string(error.reason)}
   end
 
-  # TODO: change to use cards natively? who/where should do the
-  # json <-> card conversion? Is there any reason to do it anywhere other than here?
-  # def move_card(list_id, card, position) do
-  #   body = %{"id" => card., "parent_id" =>
-  #   response = put()
-  # end
+  # create an htp error
+  defp error(%HTTPoison.Response{} = response) when response.status_code !== 200 do
+    # We're getting json back from our callback, so we don't know
+    # what we're dealing with (eg. whether it implements String.chars)
+    # Usually client will ignore, but we'll return it just in case
+    {:http_error, {response.status_code, Jason.encode!(response.body)}}
+  end
+
+  defp client_token_header(token) do
+    {"X-Client-Token", token}
+  end
 end

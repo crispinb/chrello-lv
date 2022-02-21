@@ -3,7 +3,6 @@ defmodule ChrelloWeb.BoardLive do
   use ChrelloWeb, :live_view
   import ChrelloWeb.BoardComponents
   alias Chrello.Model.Card
-  alias Chrello.Model.Column
 
   # colums - name, list of cards
   # card - title,
@@ -60,17 +59,17 @@ defmodule ChrelloWeb.BoardLive do
     # but best wait for a basic API / model implementation
     # when we'll know more about the shape of the data
 
-    {from_col, _} = List.pop_at(columns, from_col_index)
-    {to_col, _} = List.pop_at(columns, to_col_index)
+    # {from_col, _} = List.pop_at(columns, from_col_index)
+    # {to_col, _} = List.pop_at(columns, to_col_index)
 
-    {card, from_col_cards} = List.pop_at(from_col.cards, from_card_index)
-    from_col = %Column{from_col | cards: from_col_cards}
+    # {card, from_col_cards} = List.pop_at(from_col.cards, from_card_index)
+    # from_col = %Column{from_col | cards: from_col_cards}
 
-    to_col_cards = List.insert_at(to_col.cards, to_card_index, card)
-    to_col = %{to_col | cards: to_col_cards}
+    # to_col_cards = List.insert_at(to_col.cards, to_card_index, card)
+    # to_col = %{to_col | cards: to_col_cards}
 
-    columns = List.replace_at(columns, from_col_index, from_col)
-    columns = List.replace_at(columns, to_col_index, to_col)
+    # columns = List.replace_at(columns, from_col_index, from_col)
+    # columns = List.replace_at(columns, to_col_index, to_col)
 
     columns
   end

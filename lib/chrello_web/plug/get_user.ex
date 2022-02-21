@@ -27,9 +27,8 @@ defmodule ChrelloWeb.Plug.GetUser do
                 conn -> conn
               end
 
-            {:error, msg} ->
-              Logger.info("Token refresh failed: #{msg}")
-              redirect_to_login(conn)
+            error ->
+              log_error(error)
           end
 
         conn ->
@@ -45,11 +44,22 @@ defmodule ChrelloWeb.Plug.GetUser do
       {:ok, user} ->
         assign(conn, :current_user, user)
 
-      {:error, msg} ->
-        Logger.info("Checkvist API get current user failed: #{msg}")
-
-        :error
+      error ->
+        log_error(error)
     end
+  end
+
+  defp log_error({:http_error, {status_code, msg}}) do
+    Logger.info(
+      "Checkvist API get current user failed with status code #{status_code}, reason: #{msg}"
+    )
+
+    :error
+  end
+
+  defp log_error({:network_error, reason}) do
+    Logger.info("Network error while calling Checkvist API: #{reason}")
+    :error
   end
 
   defp redirect_to_login(conn) do
