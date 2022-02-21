@@ -1,4 +1,6 @@
 defmodule Chrello.User do
+  @moduledoc false
+
   defstruct api_token: nil, email: nil, checkvist_id: nil, username: nil
 
   @type t :: %__MODULE__{
