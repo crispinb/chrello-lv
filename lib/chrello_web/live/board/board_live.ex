@@ -1,8 +1,9 @@
 defmodule ChrelloWeb.BoardLive do
+  @moduledoc false
   use ChrelloWeb, :live_view
   import ChrelloWeb.BoardComponents
-  alias Chrello.Board.Card
-  alias Chrello.Board.Column
+  alias Chrello.Model.Card
+  alias Chrello.Model.Column
 
   # colums - name, list of cards
   # card - title,
@@ -26,13 +27,11 @@ defmodule ChrelloWeb.BoardLive do
   # must return empty list (not nil) if there are no columns
   defp get_board do
     Chrello.Api.Client.get_board(774_394, "6BLQ71p8wTaKXCH8nuaVOjsNzkSWJX")
-    |> IO.inspect(label: :board_from_api)
   end
 
   # {card_id: from: to:}
   # from/to: {col: , index:}
   def handle_event("card-dropped", payload, socket) do
-    IO.inspect(payload, label: :received_drag_event)
     socket = assign(socket, board: card_dropped(socket.assigns.board, payload))
 
     {:noreply, socket}
@@ -47,7 +46,6 @@ defmodule ChrelloWeb.BoardLive do
          "from" => %{"col" => from_col, "index" => from_index},
          "to" => %{"col" => to_col, "index" => to_index}
        }) do
-    IO.puts("Drag event from [#{from_col}, #{from_index}], to #{to_col}, #{to_index}")
     columns
   end
 
@@ -61,22 +59,18 @@ defmodule ChrelloWeb.BoardLive do
     # TODO: replace all this crud with Access if possible
     # but best wait for a basic API / model implementation
     # when we'll know more about the shape of the data
-    IO.inspect(columns, label: :cols_in)
 
     {from_col, _} = List.pop_at(columns, from_col_index)
     {to_col, _} = List.pop_at(columns, to_col_index)
 
     {card, from_col_cards} = List.pop_at(from_col.cards, from_card_index)
-    IO.inspect(from_col_cards, label: :from_cards)
     from_col = %Column{from_col | cards: from_col_cards}
-    IO.inspect(from_col, label: :from_col)
 
     to_col_cards = List.insert_at(to_col.cards, to_card_index, card)
     to_col = %{to_col | cards: to_col_cards}
 
     columns = List.replace_at(columns, from_col_index, from_col)
     columns = List.replace_at(columns, to_col_index, to_col)
-    IO.inspect(columns, label: :cols_out)
 
     columns
   end

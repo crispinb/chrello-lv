@@ -46,7 +46,7 @@ defmodule ChrelloWeb.Plug.GetUser do
         assign(conn, :current_user, user)
 
       {:error, msg} ->
-        Logger.error("Checkvist API get current user failed: #{msg}")
+        Logger.info("Checkvist API get current user failed: #{msg}")
 
         :error
     end
