@@ -34,3 +34,5 @@ npm-debug.log
 
 .tool-versions
 .credo.exs
+scratch.livemd
+results.json
