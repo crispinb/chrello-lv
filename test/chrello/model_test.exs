@@ -42,18 +42,7 @@ defmodule Chrello.ModelTest do
     assert(task3_3_1_children[1].title == "task 3.3.1.1")
   end
 
-# TODO: first get board & cards working
 # TODO: then retrofit client & client_test
-
-# new board strategy
-# no columns
-# instead a board has cards (map thereof)
-# and a 'current card' which is a list of integer keys
-# representing the Access path through the maps
-# to the top level map of cards
-
-
-  # test "card from checkvist 'taskNNN.json'"
 
   # test "change card text"
 

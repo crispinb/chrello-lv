@@ -44,8 +44,6 @@ defmodule Chrello.Api.Client do
     |> Jason.decode!()
   end
 
-  # TODO: make errors consistent
-
   @spec get_board(integer, String.t()) :: {:ok, Chrello.Model.Board.t()} | {:error, any()}
   def get_board(board_id, api_token) when is_integer(board_id) do
     with {:ok, response} when response.status_code == 200 <-
@@ -53,13 +51,9 @@ defmodule Chrello.Api.Client do
          {:ok, tasks} <- get_tasks(board_id, api_token) do
       {:ok, Board.new(response.body, tasks)}
     else
-      # http error
-      {:ok, response} when response.status_code != 200 ->
-        error(response)
-
-      # network error
-      {:error, %HTTPoison.Error{} = error} ->
-        error(error)
+      # http or network error
+      {_ok_or_error, response_or_error} ->
+        error(response_or_error)
     end
   end
 
@@ -69,11 +63,8 @@ defmodule Chrello.Api.Client do
         user = Chrello.User.new(response.body)
         {:ok, user}
 
-      {:ok, response} ->
-        error(response)
-
-      {:error, error} ->
-        error(error)
+      {_ok_or_error, response_or_error} ->
+        error(response_or_error)
     end
   end
 
@@ -99,8 +90,7 @@ defmodule Chrello.Api.Client do
   def refresh_auth_token(old_token) do
     case request(:get, "/auth/refresh_token.json?version=2", %{old_token: old_token}) do
       {:ok, response} when response.status_code == 200 -> {:ok, response.body["token"]}
-      {:ok, response} -> error(response)
-      {:error, error} -> error(error)
+      {_ok_or_error, response_or_error} -> error(response_or_error)
     end
   end
 
