@@ -7,10 +7,10 @@ defmodule ChrelloWeb.BoardComponents do
   def card(assigns) do
     ~H"""
     <div id={@id} class="flex-col w-44 h-44 bg-blue-100 text-center">
-      <div id="card_title" >
+      <div id="card_title">
         <%= @title %>
       </div>
-      <div id="card-body" >
+      <div id="card-body">
         <%= @content %>
       </div>
     </div>

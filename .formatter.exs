@@ -1,4 +1,9 @@
 [
   import_deps: [:phoenix],
-  inputs: ["*.{ex,exs}", "{config,lib,test}/**/*.{ex,exs}"]
+  plugins: [HeexFormatter],
+  inputs: [
+    # ...
+    "*.{heex,ex,exs}",
+    "{config,lib,test}/**/*.{heex,ex,exs}"
+  ]
 ]

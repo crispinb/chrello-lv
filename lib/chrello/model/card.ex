@@ -53,5 +53,4 @@ defmodule Chrello.Model.Card do
     |> Enum.map(fn {k, v} -> {k, __MODULE__.new(v)} end)
     |> Enum.into(%{})
   end
-
 end
