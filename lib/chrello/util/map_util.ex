@@ -32,14 +32,13 @@ defmodule Chrello.Util.MapUtil do
   end
 
   defp unflatten(list, %{} = lookup, child_ids_key, children_key) do
-    list
-    |> Enum.map(fn m ->
+    Enum.map(list, fn m ->
       case m[child_ids_key] do
         [] ->
           m
 
-        children ->
-          children = Enum.map(children, fn child_id -> lookup[child_id] end)
+        child_ids ->
+          children = Enum.map(child_ids, &Map.get(lookup, &1))
           Map.put(m, children_key, unflatten(children, lookup, child_ids_key, children_key))
       end
     end)
