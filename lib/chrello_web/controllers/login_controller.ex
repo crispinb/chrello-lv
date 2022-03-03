@@ -6,12 +6,15 @@ defmodule ChrelloWeb.LoginController do
   end
 
   def login(conn, _params) do
+    IO.puts("faking login ...")
+
     conn =
       conn
-      # TODO: replace with a login form
-      |> put_session(:checkvist_auth_token, "6BLQ71p8wTaKXCH8nuaVOjsNzkSWJX")
+      # TODO: check that this works
+      # (ie. that the auth token is used to get a client token)
+      |> put_session(:checkvist_auth_token, "wvl6yh5h57eaGw25CbmofwwgGdthKC")
 
-    # TODO: change to whereever user was trying to go
+    # TODO: go to initial conn request location
     redirect(conn, to: "/board")
   end
 end

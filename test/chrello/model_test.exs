@@ -42,7 +42,7 @@ defmodule Chrello.ModelTest do
     assert(task3_3_1_children[1].title == "task 3.3.1.1")
   end
 
-# TODO: then retrofit client & client_test
+  # TODO: then retrofit client & client_test
 
   # test "change card text"
 

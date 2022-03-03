@@ -68,7 +68,7 @@ defmodule Chrello.Api.Client do
     end
   end
 
-  # TODO: where is this to be used?
+  # TODO: replace with new  err handling approach
   def get_auth_token!(username, api_key) do
     response =
       request!(
@@ -80,7 +80,6 @@ defmodule Chrello.Api.Client do
         }
       )
 
-    # TODO: replace with new  err handling approach
     case response.status_code do
       200 -> response.body["token"]
       _ -> raise "#{response.status_code} error: #{response.body["message"]}"
