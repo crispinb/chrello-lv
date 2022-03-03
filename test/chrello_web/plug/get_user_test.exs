@@ -14,7 +14,6 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
 
   test "if no auth token, redirect" do
     conn = conn_with_session() |> GetUser.call()
-
     assert(redirected_to(conn) == "/login")
   end
 
@@ -35,7 +34,7 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
     new_token = "new token"
 
     stub_get_user(bypass, old_token, new_token)
-    stub_refresh_token(bypass, new_token)
+    stub_refresh_token_success(bypass, new_token)
 
     conn = conn_with_session(%{checkvist_auth_token: old_token}) |> GetUser.call()
 
@@ -48,7 +47,7 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
 
   test "if auth token fails, and token refresh fails -> redirect to /login", %{bypass: bypass} do
     stub_get_user(bypass, "bad token", "new token")
-    stub_refresh_token(bypass, "bad token")
+    stub_refresh_token_fail(bypass)
 
     conn = conn_with_session(%{checkvist_auth_token: "bad token"}) |> GetUser.call()
 
@@ -71,9 +70,16 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
     end)
   end
 
-  defp stub_refresh_token(bypass, newToken) do
+  defp stub_refresh_token_success(bypass, newToken) do
     Bypass.stub(bypass, "GET", "/auth/refresh_token.json", fn conn ->
       Plug.Conn.resp(conn, 200, ~s({"token": "#{newToken}"}))
+    end)
+  end
+
+  # refresh fails
+  defp stub_refresh_token_fail(bypass) do
+    Bypass.stub(bypass, "GET", "/auth/refresh_token.json", fn conn ->
+      Plug.Conn.resp(conn, 401, Load.user_bad_token())
     end)
   end
 end

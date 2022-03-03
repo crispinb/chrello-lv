@@ -1,6 +1,9 @@
 defmodule ChrelloWeb.Plug.GetUser do
   @moduledoc """
-  Gets user as from Checkvist API if we have an auth token
+  Gets user from Checkvist API if we have an auth token.
+  Places user in conn assigns under :current_user key.
+  If the token is rejected by Checkvist, attempts token refresh.
+  If we don't have a token, or the token refresh fails, redirects to /login.
   """
   import Plug.Conn
   import Phoenix.Controller
@@ -13,39 +16,37 @@ defmodule ChrelloWeb.Plug.GetUser do
   end
 
   def call(conn, _options \\ []) do
-    auth_token = Plug.Conn.get_session(conn, :checkvist_auth_token)
-
-    if auth_token do
-      case maybe_assign_user(conn, auth_token) do
-        :error ->
-          case API.refresh_auth_token(auth_token) do
-            {:ok, new_token} ->
-              conn = put_session(conn, :checkvist_auth_token, new_token)
-
-              case maybe_assign_user(conn, new_token) do
-                :error -> redirect_to_login(conn)
-                conn -> conn
-              end
-
-            error ->
-              log_error(error)
-          end
-
-        conn ->
-          conn
-      end
+    with auth_token when not is_nil(auth_token) <-
+           Plug.Conn.get_session(conn, :checkvist_auth_token),
+         {:ok, conn, new_token} <- assign_current_user(conn, auth_token) do
+      if new_token != auth_token, do: put_session(conn, :checkvist_auth_token, new_token), else: conn
     else
-      redirect_to_login(conn)
+      _ -> redirect_to_login(conn)
     end
   end
 
-  defp maybe_assign_user(conn, token) do
-    case API.get_current_user(token) do
-      {:ok, user} ->
-        assign(conn, :current_user, user)
+  defp assign_current_user(conn, token, refresh_token? \\ false) do
+    with {:ok, token} <- maybe_refresh_token(token, refresh_token?),
+         {:ok, user} <- get_current_user(token) do
+      {:ok, assign(conn, :current_user, user), token}
+    else
+      {:error, :get_user_failure} -> assign_current_user(conn, token, true)
+      error -> log_error(error)
+    end
+  end
 
-      error ->
-        log_error(error)
+  defp maybe_refresh_token(token, false) do
+    {:ok, token}
+  end
+
+  defp maybe_refresh_token(token, true) do
+    API.refresh_auth_token(token)
+  end
+
+  defp get_current_user(token) do
+    case API.get_current_user(token) do
+      {:ok, user} -> {:ok, user}
+      _error -> {:error, :get_user_failure}
     end
   end
 
