@@ -1,3 +1,4 @@
+<%= if @board do %>
 <h1>Board: <%= @board.name %></h1>
 <div id="columns-container" class="flex h-screen space-x-10 p-5">
   <%= for i <- 1..Enum.count(@board.cards) do %>
@@ -13,8 +14,12 @@
         <%= if count > 0 do %>
           <%= for i <- 1..count do %>
             <% card = column.children[i] %>
-            <div>
+            <div id={"card-#{card.id}"} class="bg-blue-300 p-2"}>
+            <span class="font-semibold">
               <%= card.title %>
+              </span>
+              <hr>
+              <%= card.content %>
             </div>
           <% end %>
         <% end %>
@@ -22,3 +27,6 @@
     </div>
   <% end %>
 </div>
+<% else %>
+No board there dude
+<% end %>
