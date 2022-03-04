@@ -17,6 +17,7 @@ defmodule Chrello.Api.Client do
 
   """
   use HTTPoison.Base
+  require Logger
   alias Chrello.Model.Board
   alias Chrello.Model.Card
 
@@ -39,9 +40,19 @@ defmodule Chrello.Api.Client do
   end
 
   @impl HTTPoison.Base
+  # TODO: look for better way to handle this
+  # We don't have access here to headers so can't determine expected content type
+  # If (eg) we get a 404 it probably won't be json, so Jason.decode will fail
+  # For now: on failure just log and return unchanged response body
   def process_response_body(body) do
-    body
-    |> Jason.decode!()
+    case Jason.decode(body) do
+      {:ok, decoded} ->
+        decoded
+
+      {:error, details} ->
+        Logger.info("Jason error decoding response body: #{Exception.message(details)}")
+        body
+    end
   end
 
   @spec get_board(integer, String.t()) :: {:ok, Chrello.Model.Board.t()} | {:error, any()}

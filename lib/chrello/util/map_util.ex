@@ -56,7 +56,7 @@ defmodule Chrello.Util.MapUtil do
 
   @spec index_list_of_maps_by_key_recursive(list(), any(), any()) :: map()
   @doc """
-  Convert list of maps to map keyed by value of k,
+  Convert list of maps to map keyed by value of key,
   recursively for child lists identified by child_key
   """
   def index_list_of_maps_by_key_recursive(list, key, child_key) do
