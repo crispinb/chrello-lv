@@ -28,7 +28,7 @@ defmodule ChrelloWeb.Router do
   scope "/", ChrelloWeb do
     pipe_through [:browser, GetUser]
 
-    live "/board", BoardLive, :index
+    live "/board/:board_id", BoardLive, :show
   end
 
   # Other scopes may use custom stacks.

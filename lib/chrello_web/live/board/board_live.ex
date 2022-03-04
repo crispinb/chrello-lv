@@ -4,24 +4,30 @@ defmodule ChrelloWeb.BoardLive do
   import ChrelloWeb.BoardComponents
 
   def mount(_params, _session, socket) do
-    socket = assign_new(socket, :board, &get_board/0)
+    # TODO: get token from session
+    # TODO: ensure we have a logged in user (look at blogsta code for McCord-blessed LiveView means)
 
-    {:ok, socket}
+    {:ok, assign(socket, :board, nil)}
   end
 
-  # must return empty list (not nil) if there are no columns
-  defp get_board do
-    # TODO: get token from session
-    case Chrello.Api.Client.get_board(774_394, "wvl6yh5h57eaGw25CbmofwwgGdthKC") do
+  def handle_params(%{"board_id" => id}, _uri, %{assigns: %{live_action: :show}} = socket) do
+    socket = assign(socket, :board, get_board(String.to_integer(id)))
+    {:noreply, socket}
+  end
+
+  defp get_board(id) do
+    # case Chrello.Api.Client.get_board(774_394, "wvl6yh5h57eaGw25CbmofwwgGdthKC") do
+    case Chrello.Api.Client.get_board(id, "temp: any old crap") do
+
       {:ok, board} ->
-        IO.inspect(board, label: :BOARD)
         board
 
-      # TODO: what here?
+      # TODO: right approach here?
       _ ->
-        "not sure"
+       nil
     end
   end
+
 
   # {card_id: from: to:}
   # from/to: {col: , index:}
