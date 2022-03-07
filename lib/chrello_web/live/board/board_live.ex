@@ -3,10 +3,24 @@ defmodule ChrelloWeb.BoardLive do
   use ChrelloWeb, :live_view
   import ChrelloWeb.BoardComponents
 
-  def mount(_params, _session, socket) do
-    # TODO: get token from session
-    # TODO: ensure we have a logged in user (look at blogsta code for McCord-blessed LiveView means)
+  # TODO: get token from session
+  # TODO: ensure we have a logged in user (look at blogsta code for McCord-blessed LiveView means)
+  # something like the folllowing
+  # Check to see when dis/conneced mounts .get_user_by_session_token gets called
+  #   on_mount BlogstaWeb.LiveAuth
+  #   def mount(_params, %{"user_token" => user_token}, socket) do
+  #     socket = assign_new(socket, :current_user, fn -> Account.get_user_by_session_token(user_token) end)
 
+  #       if !socket.assigns.current_user.confirmed_at do
+  #        socket =  redirect(socket, to: "/users/log_in")
+  #         {:halt, socket}
+  #       else
+  #         {:cont, socket}
+  #       end
+  #   end
+  # end
+
+  def mount(_params, _session, socket) do
     {:ok, assign(socket, :board, nil)}
   end
 
@@ -18,24 +32,23 @@ defmodule ChrelloWeb.BoardLive do
   defp get_board(id) do
     # case Chrello.Api.Client.get_board(774_394, "wvl6yh5h57eaGw25CbmofwwgGdthKC") do
     case Chrello.Api.Client.get_board(id, "temp: any old crap") do
-
       {:ok, board} ->
         board
 
       # TODO: right approach here?
       _ ->
-       nil
+        nil
     end
   end
 
-
   # {card_id: from: to:}
   # from/to: {col: , index:}
-  # def handle_event("card-dropped", payload, socket) do
-  #   socket = assign(socket, board: card_dropped(socket.assigns.board, payload))
+  def handle_event("card-dropped", payload, socket) do
 
-  #   {:noreply, socket}
-  # end
+    # socket = assign(socket, board: card_dropped(socket.assigns.board, payload))
+
+    {:noreply, socket}
+  end
 
   # def handle_event("move-card", params, socket) do
   #   socket = assign(socket, columns: move_card(socket.assigns.columns, params))
@@ -46,6 +59,8 @@ defmodule ChrelloWeb.BoardLive do
   #        "from" => %{"col" => from_col, "index" => from_index},
   #        "to" => %{"col" => to_col, "index" => to_index}
   #      }) do
+
+
   #   columns
   # end
 

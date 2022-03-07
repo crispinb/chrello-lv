@@ -1,6 +1,7 @@
 defmodule Chrello.Util.MapUtil do
   @moduledoc false
 
+  @spec rename_keys(map(), map()) :: map()
   def rename_keys(map, keypairs) do
     Map.new(map, fn {k, v} = entry ->
       case keypairs[k] do

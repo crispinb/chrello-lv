@@ -1,6 +1,8 @@
 # The directory Mix will write compiled artifacts to.
 /_build/
 
+farkster
+
 # If you run "mix test --cover", coverage assets end up here.
 /cover/
 
@@ -32,7 +34,8 @@ chrello-*.tar
 npm-debug.log
 /assets/node_modules/
 
-.tool-versions
+/.elixir_ls/
+/.tool-versions/
 .credo.exs
 scratch.livemd
 results.json

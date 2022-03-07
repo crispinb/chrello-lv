@@ -5,6 +5,10 @@ defmodule Chrello.TestData.Load do
     File.read!("test/test_data/list.json")
   end
 
+  def tasks_flat do
+    File.read!("test/test_data/tasks_flat.json")
+  end
+
   def tasks do
     File.read!("test/test_data/tasks.json")
   end
