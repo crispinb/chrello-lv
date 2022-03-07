@@ -17,7 +17,7 @@ defmodule Chrello.ModelTest do
     assert(board.name == "devtest")
     assert(board.current_path == [])
     assert(is_map(board.cards))
-    nested_card = board.cards[2].children[1]
+    nested_card = board.cards[1].children[0]
     assert(is_struct(nested_card))
     assert(nested_card.title == "task2.1")
   end
@@ -29,17 +29,17 @@ defmodule Chrello.ModelTest do
     assert(is_map(card_tree))
     # 3 cards @ top level
     assert(Enum.count(card_tree) == 3)
-    assert(is_struct(card_tree[1], Card))
-    assert(card_tree[1].title == "task1")
+    assert(is_struct(card_tree[0], Card))
+    assert(card_tree[0].title == "task1")
     # Task 1 should be a leaf node
-    task1_children = card_tree[1].children
+    task1_children = card_tree[0].children
     assert(is_map(task1_children))
     assert(Enum.empty?(task1_children))
-    task3_children = card_tree[3].children
+    task3_children = card_tree[2].children
     assert(Enum.count(task3_children) == 3)
-    task3_3_1_children = task3_children[3].children[1].children
+    task3_3_1_children = task3_children[2].children[0].children
     assert(Enum.count(task3_3_1_children) == 2)
-    assert(task3_3_1_children[1].title == "task 3.3.1.1")
+    assert(task3_3_1_children[0].title == "task 3.3.1.1")
   end
 
   # TODO: then retrofit client & client_test

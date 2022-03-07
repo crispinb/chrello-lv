@@ -3,13 +3,17 @@ import Sortable from "sortablejs";
 const Hook = {
     mounted() {
         const s = Sortable.create(this.el, {
-            group: "draggable",
-            ghostClass: "bg-red-700",
-            dragClass: "bg-cyan-800",
+            group: {name: "draggable", pull: true, put: true},
+            ghostClass: "bg-orange-500",
+            dragClass: "bg-red-500",
             onEnd: e => {
-                this.pushEvent("card-dropped", { from: {col: e.from.id, index: e.oldIndex}, to: {col: e.to.id, index: e.newIndex} });
+                const colNumSuffix = "col-(.*)";
+                const fromColIndex = parseInt(e.from.id.match(colNumSuffix)[1]);
+                const toColIndex = parseInt(e.to.id.match(colNumSuffix)[1]);
+                this.pushEvent("card-dropped", { from: [fromColIndex, e.oldIndex], to: [toColIndex, e.newIndex] });
             }
         });
+        // TODO: remove
         console.log(`sortable created for ${this.el.id}`)
     }
 }

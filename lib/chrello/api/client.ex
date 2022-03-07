@@ -9,7 +9,7 @@ defmodule Chrello.Api.Client do
   | Card     | Task     | 2nd level |
 
 
-  3rd level and below Checkvist tasks are currently ignored
+  Checkvist tasks' "position" property is 1-based. We convert to 0-based internally
 
   Errors are:
     {:http_error, {status_code, description (string)}}

@@ -48,6 +48,8 @@ defmodule Chrello.Model.Card do
       |> Enum.map(fn task -> task["id"] end)
 
     tasks_json
+    # swap from 1-based position (Checkvist) to our 0-based
+    |> Enum.map(fn m -> Map.put(m , "position", m["position"] - 1) end)
     |> MapUtil.unflatten(parent_ids, "id", "tasks", "children")
     |> MapUtil.index_list_of_maps_by_key_recursive("position", "children")
     |> Enum.map(fn {k, v} -> {k, __MODULE__.new(v)} end)
