@@ -44,7 +44,6 @@ defmodule ChrelloWeb.BoardLive do
   # {card_id: from: to:}
   # from/to: {col: , index:}
   def handle_event("card-dropped", payload, socket) do
-
     # socket = assign(socket, board: card_dropped(socket.assigns.board, payload))
 
     {:noreply, socket}
@@ -59,7 +58,6 @@ defmodule ChrelloWeb.BoardLive do
   #        "from" => %{"col" => from_col, "index" => from_index},
   #        "to" => %{"col" => to_col, "index" => to_index}
   #      }) do
-
 
   #   columns
   # end

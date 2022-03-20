@@ -28,7 +28,7 @@ defmodule Chrello.ModelTest do
     assert(Enum.empty?(card1.children))
     assert(length(card3.children) == 3)
 
-    card3_3_1 = get_in(card3, [2, 0])
+    card3_3_1 = card3[2][0]
     assert(length(card3_3_1.children) == 2)
     card3_3_1_1 = card3_3_1[0]
     assert(card3_3_1_1.title == "task 3.3.1.1")
@@ -40,7 +40,7 @@ defmodule Chrello.ModelTest do
     assert(board.current_path == [])
     assert(is_list(board.cards))
 
-    nested_card = get_in(board, [1, 0])
+    nested_card = board[1][0]
 
     assert(is_struct(nested_card))
     assert(nested_card.title == "task2.1")
@@ -59,7 +59,8 @@ defmodule Chrello.ModelTest do
 
     assert(board_updated != board)
     assert(Enum.count(board.cards) == Enum.count(board_updated.cards))
-    assert(get_in(board_updated, [1, 0]).id == get_in(board, [1, 1]).id)
+    assert(board_updated[1][0].id == board[1][1].id)
+    assert(board_updated[1][0].id == board[1][1].id)
   end
 
   test "move card (between nested cards' children)", %{board: board} do
@@ -67,9 +68,9 @@ defmodule Chrello.ModelTest do
 
     assert(board_updated != board)
     assert(Enum.count(board.cards) == Enum.count(board_updated.cards))
-    assert(length(get_in(board_updated, [0]).children) == 1)
-    assert(length(board_updated[1][:children]) == 1)
-    assert(get_in(board_updated, [0, 0]) == get_in(board, [1, 0]))
+    assert(length(board_updated[0].children) == 1)
+    assert(length(board_updated[1].children) == 1)
+    assert(board_updated[0][0] == board[1][0])
   end
 
   # test "change card contents"

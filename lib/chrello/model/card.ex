@@ -67,10 +67,9 @@ defmodule Chrello.Model.Card do
     end
   end
 
-  def fetch(card, key)  do
+  def fetch(card, key) do
     {:ok, Map.get(card, key)}
   end
-
 
   @impl Access
   def get_and_update(card, key, f) do

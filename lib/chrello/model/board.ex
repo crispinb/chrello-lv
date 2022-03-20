@@ -10,6 +10,7 @@ defmodule Chrello.Model.Board do
   """
   @behaviour Access
   alias Chrello.Model.Card
+  alias Chrello.Util.ListUtil
 
   @enforce_keys [:id, :name, :item_count, :cards]
   defstruct [:id, :name, :item_count, :cards, current_path: []]
@@ -38,63 +39,51 @@ defmodule Chrello.Model.Board do
 
   """
   @spec move(t(), list(integer()), list(integer())) :: __MODULE__.t()
-  # top-level move
+  # top-level move (path contains just 1 index)
   def move(board, [from_index], [to_index]) do
-    %{board | cards: move_within_list(board.cards, from_index, to_index)}
+    %{board | cards: ListUtil.move_item(board.cards, from_index, to_index)}
   end
 
   def move(board, from_path, to_path) do
-    from_parent_path = Enum.drop(from_path, -1)
-    to_parent_path = Enum.drop(to_path, -1)
+    [from | from_parent_path] = Enum.reverse(from_path)
+    [to | to_parent_path] = Enum.reverse(to_path)
 
-    if from_parent_path == to_parent_path do
-      parent_card = get_in(board, from_parent_path)
-
-      updated_children =
-        move_within_list(
-          parent_card[:children],
-          hd(Enum.reverse(from_path)),
-          hd(Enum.reverse(to_path))
-        )
-
-      updated_parent_card = %{parent_card | children: updated_children}
-      put_in(board, from_parent_path, updated_parent_card)
-    else
-      from_parent_card = get_in(board, from_parent_path)
-      to_parent_card = get_in(board, to_parent_path)
-
-      {updated_from_children, updated_to_children} =
-        move_between_lists(
-          from_parent_card[:children],
-          hd(Enum.reverse(from_path)),
-          to_parent_card[:children],
-          hd(Enum.reverse(to_path))
-        )
-
-      updated_from_parent_card = %{from_parent_card | children: updated_from_children}
-      updated_to_parent_card = %{to_parent_card | children: updated_to_children}
-
-      board
-      |> put_in(from_parent_path, updated_from_parent_card)
-      |> put_in(to_parent_path, updated_to_parent_card)
-    end
+    move_item(
+      board,
+      from_parent_path,
+      to_parent_path,
+      from,
+      to
+    )
   end
 
-  # TODO: probably move this to generic
-  def move_within_list(list, from, to) do
-    to_item = Enum.at(list, to)
-
-    list
-    |> List.replace_at(to, Enum.at(list, from))
-    |> List.replace_at(from, to_item)
+  # move within child lists
+  defp move_item(board, _from_path = path, _to_path = path, from, to) do
+    parent_card = get_in(board, path)
+    updated_children = ListUtil.move_item(parent_card[:children], from, to)
+    updated_parent_card = %{parent_card | children: updated_children}
+    put_in(board, path, updated_parent_card)
   end
 
-  def move_between_lists(from_list, from_index, to_list, to_index) do
+  # move between child lists
+  defp move_item(board, from_path, to_path, from, to) do
+    from_parent_card = get_in(board, from_path)
+    to_parent_card = get_in(board, to_path)
 
-    {card_to_move, updated_from_list} = List.pop_at(from_list, from_index)
+    {updated_from_children, updated_to_children} =
+      ListUtil.move_item_to_list(
+        from_parent_card[:children],
+        from,
+        to_parent_card[:children],
+        to
+      )
 
-    updated_to_list = List.insert_at(to_list, to_index, card_to_move)
-    {updated_from_list, updated_to_list}
+    updated_from_parent_card = %{from_parent_card | children: updated_from_children}
+    updated_to_parent_card = %{to_parent_card | children: updated_to_children}
+
+    board
+    |> put_in(from_path, updated_from_parent_card)
+    |> put_in(to_path, updated_to_parent_card)
   end
 
   # Access
