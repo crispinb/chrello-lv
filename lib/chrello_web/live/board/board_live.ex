@@ -1,6 +1,7 @@
 defmodule ChrelloWeb.BoardLive do
   @moduledoc false
   use ChrelloWeb, :live_view
+  require Logger
   import ChrelloWeb.BoardComponents
 
   # TODO: get token from session
@@ -20,23 +21,40 @@ defmodule ChrelloWeb.BoardLive do
   #   end
   # end
 
+
   def mount(_params, _session, socket) do
+    # TODO:
+    # OK the user was in the conn, why isn't it appearing in teh socket?
+    # or have I misunderstood?
+    # I think I have
+    # I think we might have to get it from teh session, not the assigns.
+    # get_user plug does it for the initial call.
+    # But I thought for the initial disconnected moutnwe got the
+    # conn assigns in our first socket??
+    IO.puts("MOUNT -_----------------->")
+    IO.inspect(socket.assigns, label: :CURRENT_SOCKET_ASSIGNS)
+
     {:ok, assign(socket, :board, nil)}
   end
 
   def handle_params(%{"board_id" => id}, _uri, %{assigns: %{live_action: :show}} = socket) do
-    socket = assign(socket, :board, get_board(String.to_integer(id)))
+
+    # can't expunge hard coded until we get the user in teh socket
+    tOKEN_MUST_GET_FROM_CURRENT_USER = "nhBJnlw5cZoU3VATWQEVQPXGUzYVAJ"
+
+    socket = assign(socket, :board, get_board(String.to_integer(id), tOKEN_MUST_GET_FROM_CURRENT_USER))
     {:noreply, socket}
   end
 
-  defp get_board(id) do
-    # case Chrello.Api.Client.get_board(774_394, "wvl6yh5h57eaGw25CbmofwwgGdthKC") do
-    case Chrello.Api.Client.get_board(id, "temp: any old crap") do
+  defp get_board(id, token) do
+    case Chrello.Api.Client.get_board(id, token) do
       {:ok, board} ->
         board
+        |> IO.inspect(label: :RETURNED_BOARD)
 
-      # TODO: right approach here?
-      _ ->
+      # TODO: implement error UI
+      {_any_error, content} ->
+        Logger.error(message: "no board returned", error_content: content)
         nil
     end
   end

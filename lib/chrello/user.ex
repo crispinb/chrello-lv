@@ -10,7 +10,7 @@ defmodule Chrello.User do
           checkvist_id: integer()
         }
 
-  def new(%{"id" => id, "email" => email, "username" => username}) do
-    %__MODULE__{checkvist_id: id, email: email, username: username}
+  def new(%{"id" => id, "email" => email, "username" => username},  api_token) do
+    %__MODULE__{checkvist_id: id, email: email, username: username, api_token: api_token}
   end
 end

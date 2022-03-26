@@ -71,7 +71,7 @@ defmodule Chrello.Api.Client do
   def get_current_user(token) do
     case get("/auth/curr_user.json", [client_token_header(token)]) do
       {:ok, response} when response.status_code == 200 ->
-        user = Chrello.User.new(response.body)
+        user = Chrello.User.new(response.body, token)
         {:ok, user}
 
       {_ok_or_error, response_or_error} ->

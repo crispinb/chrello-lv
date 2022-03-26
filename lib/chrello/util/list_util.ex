@@ -1,5 +1,4 @@
 defmodule Chrello.Util.ListUtil do
-
   @doc """
   Moves a list item within a list from one position to another, leaving no gaps
   """
@@ -14,7 +13,7 @@ defmodule Chrello.Util.ListUtil do
 
   @doc """
   Moves an item from one list to a specific position in another list,
-  returning both updated lists s
+  returning both updated lists
   """
   @spec move_item_to_list(list(), pos_integer(), list(), pos_integer()) :: {list(), list()}
   def move_item_to_list(from_list, from_index, to_list, to_index) do
@@ -23,5 +22,4 @@ defmodule Chrello.Util.ListUtil do
     updated_to_list = List.insert_at(to_list, to_index, card_to_move)
     {updated_from_list, updated_to_list}
   end
-
 end

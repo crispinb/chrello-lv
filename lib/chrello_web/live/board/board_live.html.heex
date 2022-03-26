@@ -2,7 +2,7 @@
   <h1>Board: <%= @board.name %></h1>
   <div id="columns-container" class="flex h-screen space-x-10 p-5">
     <%= for i <- 0..Enum.count(@board.cards) - 1 do %>
-      <% column = @board.cards[i] %>
+      <% column = @board[i] %>
       <div id={"column-container"} class="flex-col w-52 bg-slate-100">
         <%= column.title %>
         <div
@@ -13,7 +13,7 @@
           <% card_count = Enum.count(column.children) - 1 %>
           <%= if card_count > 0 do %>
             <%= for i <- 0..card_count do %>
-              <% card = column.children[i] %>
+              <% card = column[i] %>
               <div id={"card-#{i}"} class="bg-blue-300 p-2" }>
                 <span class="font-semibold">
                   <%= card.title %>
@@ -28,5 +28,6 @@
     <% end %>
   </div>
 <% else %>
-  No board there dude
+  No board found<br> Sorry dude 😞
+
 <% end %>

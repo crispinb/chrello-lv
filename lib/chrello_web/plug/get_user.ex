@@ -19,7 +19,8 @@ defmodule ChrelloWeb.Plug.GetUser do
   def call(conn, _options \\ []) do
     with auth_token when not is_nil(auth_token) <-
            Plug.Conn.get_session(conn, :checkvist_auth_token),
-         {:ok, conn, new_token} <- assign_current_user(conn, auth_token) do
+         {:ok, conn, new_token} <-
+           assign_current_user(conn, auth_token) do
       if new_token != auth_token,
         do: put_session(conn, :checkvist_auth_token, new_token),
         else: conn

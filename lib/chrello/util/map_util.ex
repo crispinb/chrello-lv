@@ -22,9 +22,6 @@ defmodule Chrello.Util.MapUtil do
 
   The result is the same list of maps, each with a new 'children_key',
   pointing to a list of embedded child maps.
-
-  Child maps are removed from the parent level in the returned list (they
-  are moved further down the tree)
   """
   def unflatten(list, parent_ids, id_key, child_ids_key, children_key) do
     lookup = index_list_of_maps_by_key(list, id_key)
