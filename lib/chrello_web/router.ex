@@ -1,6 +1,6 @@
 defmodule ChrelloWeb.Router do
   use ChrelloWeb, :router
-  alias ChrelloWeb.Plug.GetUser
+  alias ChrelloWeb.Auth.GetUserPlug
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -26,7 +26,7 @@ defmodule ChrelloWeb.Router do
 
   # authenticated routes (ie. checkvist auth token)
   scope "/", ChrelloWeb do
-    pipe_through [:browser, GetUser]
+    pipe_through [:browser, GetUserPlug]
 
     live "/board/:board_id", BoardLive, :show
   end

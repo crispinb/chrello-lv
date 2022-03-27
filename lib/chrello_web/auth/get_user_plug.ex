@@ -1,4 +1,4 @@
-defmodule ChrelloWeb.Plug.GetUser do
+defmodule ChrelloWeb.Auth.GetUserPlug do
   @moduledoc """
   Gets user from Checkvist API if we have an auth token in the session.
   Places user in conn assigns under :current_user key.

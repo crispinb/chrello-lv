@@ -44,6 +44,7 @@ defmodule Chrello.Model.Board do
     %{board | cards: ListUtil.move_item(board.cards, from_index, to_index)}
   end
 
+  # nested move (either path has more than 1 indices)
   def move(board, from_path, to_path) do
     [from | from_parent_path] = Enum.reverse(from_path)
     [to | to_parent_path] = Enum.reverse(to_path)

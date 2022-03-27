@@ -1,19 +1,4 @@
-// We import the CSS which is extracted to its own file by esbuild.
-// Remove this line if you add a your own CSS build pipeline (e.g postcss).
 import "../css/app.css"
-
-// You can include dependencies in two ways.
-//
-// The simplest option is to put them in assets/vendor and
-// import them using relative paths:
-//
-//     import "../vendor/some-package.js"
-//
-// Alternatively, you can `npm install some-package --prefix assets` and import
-// them using a path starting with the package name:
-//
-//     import "some-package"
-//
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
@@ -43,5 +28,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
-
