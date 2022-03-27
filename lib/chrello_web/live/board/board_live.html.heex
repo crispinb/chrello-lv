@@ -6,7 +6,8 @@
       <div id={"column-container"} class="flex-col w-52 bg-slate-100">
         <%= column.title %>
         <div
-          id={"col-#{i}"}
+          id={"column-#{i}"}
+          data-column-index={i}
           class="h-full w-full flex-col space-y-4 p-4 bg-green-100"
           phx-hook="dragDropHook"
         >
