@@ -76,6 +76,7 @@ defmodule ChrelloWeb.Auth.GetUserPlug do
 
   defp redirect_to_login(conn, reason) do
     Logger.error("Redirecting to login: #{reason}")
+
     conn
     |> put_flash(:error, "You must log in to Checkvist")
     |> redirect(to: Routes.login_path(conn, :index))

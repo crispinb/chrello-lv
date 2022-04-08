@@ -37,9 +37,7 @@ defmodule Chrello.MixProject do
       {:phoenix, "~> 1.6.5"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      # TODO: replace github with hex live_view when it has the HeexFormatter
-      # {:phoenix_live_view, "~> 0.17.7"},
-      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view", override: true},
+      {:phoenix_live_view, "~> 0.17.9"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
