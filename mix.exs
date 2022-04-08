@@ -37,7 +37,9 @@ defmodule Chrello.MixProject do
       {:phoenix, "~> 1.6.5"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.17.7"},
+      # TODO: replace github with hex live_view when it has the HeexFormatter
+      # {:phoenix_live_view, "~> 0.17.7"},
+      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view", override: true},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
@@ -54,8 +56,7 @@ defmodule Chrello.MixProject do
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
       # dev iex was running tests - something to do with this?
       {:mix_test_watch, "~> 1.1", only: [:dev], runtime: false},
-      {:credo, "~>1.6", only: [:dev, :test], runtime: false},
-      {:heex_formatter, github: "feliperenan/heex_formatter", only: [:dev, :test]}
+      {:credo, "~>1.6", only: [:dev, :test], runtime: false}
     ]
   end
 
