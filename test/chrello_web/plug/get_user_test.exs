@@ -1,9 +1,9 @@
 defmodule ChrelloWeb.Plugs.GetUserTest do
   @moduledoc """
-  Tests for  the GetUser plug
+  Tests for  the GetUserPlug plug
   """
   use ChrelloWeb.ConnCase, async: true
-  alias ChrelloWeb.Plug.GetUser
+  alias ChrelloWeb.Auth.GetUserPlug
   alias Chrello.TestData.Load
 
   setup %{} do
@@ -13,14 +13,14 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
   end
 
   test "if no auth token, redirect" do
-    conn = conn_with_session() |> GetUser.call()
+    conn = conn_with_session() |> GetUserPlug.call()
     assert(redirected_to(conn) == "/login")
   end
 
   test "if auth token, get user and assign to :current_user", %{bypass: bypass} do
     stub_get_user(bypass, "old token", "new token")
 
-    conn = conn_with_session(%{checkvist_auth_token: "new token"}) |> GetUser.call()
+    conn = conn_with_session(%{checkvist_auth_token: "new token"}) |> GetUserPlug.call()
 
     user = conn.assigns.current_user
 
@@ -36,7 +36,7 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
     stub_get_user(bypass, old_token, new_token)
     stub_refresh_token_success(bypass, new_token)
 
-    conn = conn_with_session(%{checkvist_auth_token: old_token}) |> GetUser.call()
+    conn = conn_with_session(%{checkvist_auth_token: old_token}) |> GetUserPlug.call()
 
     user = conn.assigns.current_user
 
@@ -49,7 +49,7 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
     stub_get_user(bypass, "bad token", "new token")
     stub_refresh_token_fail(bypass)
 
-    conn = conn_with_session(%{checkvist_auth_token: "bad token"}) |> GetUser.call()
+    conn = conn_with_session(%{checkvist_auth_token: "bad token"}) |> GetUserPlug.call()
 
     assert(redirected_to(conn) == "/login")
   end

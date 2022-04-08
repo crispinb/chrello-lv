@@ -25,7 +25,7 @@ defmodule ChrelloWeb.Auth.GetUserPlug do
         do: put_session(conn, :checkvist_auth_token, new_token),
         else: conn
     else
-      _ -> redirect_to_login(conn)
+      _ -> redirect_to_login(conn, "no auth token in session!")
     end
   end
 
@@ -74,7 +74,8 @@ defmodule ChrelloWeb.Auth.GetUserPlug do
     :error
   end
 
-  defp redirect_to_login(conn) do
+  defp redirect_to_login(conn, reason) do
+    Logger.error("Redirecting to login: #{reason}")
     conn
     |> put_flash(:error, "You must log in to Checkvist")
     |> redirect(to: Routes.login_path(conn, :index))
