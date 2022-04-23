@@ -14,11 +14,11 @@ Given the difficulty (inherent to software it seems) of keeping ambitions in che
 ## FAQ
 * *isn't "Chrello" a ridiculous name*?
 
-    Yes but I am English so that's OK. 
+    Yes but I am English so it's cultural.
     
 * *mightn't the name be a trademark violation*?
 
-    Probably but that's OK too because I'm also Australianish.
+    Probably but I'm also Australianish so that's also cultural.
 
 ## Refs
 * [Checkvist API docs](https://checkvist.com/auth/api)
@@ -26,8 +26,3 @@ Given the difficulty (inherent to software it seems) of keeping ambitions in che
   * [youtube](https://www.youtube.com/watch?v=U1EKT7WT_Ic)
 * [Phoenix LiveView Trello clone example](https://github.com/noozo/live_view_trello_clone)
 * https://sortablejs.github.io/Sortable/
-
-
-
-
-

@@ -1,28 +1,25 @@
 <%= if @board do %>
   <h1>Board: <%= @board.name %></h1>
   <div id="columns-container" class="flex h-screen space-x-10 p-5">
-    <%= for i <- 0..Enum.count(@board.cards) - 1 do %>
-      <% column = @board[i] %>
-      <div id="column-container" class="flex-col w-52 bg-slate-100">
-        <%= column.title %>
+    <%= for {col, col_index} <- Enum.with_index(@board.cards) do %>
+      <div id={"column-container-#{col_index}"} class="flex-col w-52 bg-slate-100">
+        <%= live_patch("#{col.title} (click to zoom)",
+          to: Routes.board_path(@socket, :show, @board.id, task: col.id)
+        ) %>
         <div
-          id={"column-#{i}"}
-          data-column-index={i}
+          id={"column-#{col_index}"}
+          data-column-index={col_index}
           class="h-full w-full flex-col space-y-4 p-4 bg-green-100"
           phx-hook="dragDropHook"
         >
-          <% card_count = Enum.count(column.children) - 1 %>
-          <%= if card_count > 0 do %>
-            <%= for i <- 0..card_count do %>
-              <% card = column[i] %>
-              <div id={"card-#{i}"} class="bg-blue-300 p-2" }>
-                <span class="font-semibold">
-                  <%= card.title %>
-                </span>
-                <hr />
-                <%= card.content %>
-              </div>
-            <% end %>
+          <%= for {card, card_index} <- Enum.with_index(col.children) do %>
+            <div id={"card-#{col_index}-#{card_index}"} class="bg-blue-300 p-2" }>
+              <span class="font-semibold">
+                <%= card.title %>
+              </span>
+              <hr />
+              <%= card.content %>
+            </div>
           <% end %>
         </div>
       </div>

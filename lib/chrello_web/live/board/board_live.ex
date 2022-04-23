@@ -18,32 +18,24 @@ defmodule ChrelloWeb.BoardLive do
     {:ok, assign(socket, :board, nil)}
   end
 
-  def mount(_params, session, socket) do
-    IO.inspect(session, label: :dying_session)
+  def mount(_params, _session, socket) do
+    Logger.error("No token in session. Halting")
     {:halt, socket}
   end
 
-  @spec handle_params(map, any, %{
-          :assigns => %{
-            :current_user => atom | %{:api_token => binary, optional(any) => any},
-            :live_action => :show,
-            optional(any) => any
-          },
-          optional(any) => any
-        }) :: {:noreply, map}
   def handle_params(
         %{"board_id" => id},
         _uri,
         %{assigns: %{current_user: user, live_action: :show}} = socket
       ) do
     token = user.api_token
-
     socket = assign(socket, :board, get_board(String.to_integer(id), token))
-
     {:noreply, socket}
   end
 
   defp get_board(id, token) do
+    Logger.info("Fetching board from Checkvist")
+
     case Chrello.Api.Client.get_board(id, token) do
       {:ok, board} ->
         board
