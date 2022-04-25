@@ -1,13 +1,5 @@
 defmodule Chrello.Api.Client do
   @moduledoc """
-  Chrello & Checkvist use different terminology
-
-  |  Chrello | Checkvist| Notes     |
-  |  ------- | -------  | -------   |
-  | Board    | List     |           |
-  | Column   | Task     | Top-level |
-  | Card     | Task     | 2nd level |
-
 
   Checkvist tasks' "position" property is 1-based. We convert to 0-based internally
 
@@ -18,8 +10,7 @@ defmodule Chrello.Api.Client do
   """
   use HTTPoison.Base
   require Logger
-  alias Chrello.Model.Board
-  alias Chrello.Model.Card
+  alias Chrello.Model.{Checklist, Task}
 
   @request_headers_base [{"Content-Type", "application/json"}]
 
@@ -55,12 +46,12 @@ defmodule Chrello.Api.Client do
     end
   end
 
-  @spec get_board(integer, String.t()) :: {:ok, Chrello.Model.Board.t()} | {:error, any()}
-  def get_board(board_id, api_token) when is_integer(board_id) do
+  @spec get_checklist(integer, String.t()) :: {:ok, Chrello.Model.Checklist.t()} | {:error, any()}
+  def get_checklist(checklist_id, api_token) when is_integer(checklist_id) do
     with {:ok, response} when response.status_code == 200 <-
-           get("/checklists/#{board_id}.json", [client_token_header(api_token)]),
-         {:ok, tasks} <- get_tasks(board_id, api_token) do
-      {:ok, Board.new(response.body, tasks)}
+           get("/checklists/#{checklist_id}.json", [client_token_header(api_token)]),
+         {:ok, tasks} <- get_tasks(checklist_id, api_token) do
+      {:ok, Checklist.new(response.body, tasks)}
     else
       # http or network error
       {_ok_or_error, response_or_error} ->
@@ -106,7 +97,7 @@ defmodule Chrello.Api.Client do
 
   defp get_tasks(list_id, api_token) when is_integer(list_id) do
     case get("/checklists/#{list_id}/tasks.json", [client_token_header(api_token)]) do
-      {:ok, response} -> {:ok, Card.get_cards_from_task_list(response.body)}
+      {:ok, response} -> {:ok, Task.get_tasks_from_task_list(response.body)}
       err -> err
     end
   end

@@ -1,7 +1,8 @@
 defmodule Chrello.ModelTest do
   @moduledoc false
   use ExUnit.Case, async: true
-  alias Chrello.Model.{Board, Card}
+  # TODO: task -> Task
+  alias Chrello.Model.{Checklist, Task}
 
   # tests of functions converting between model & checkvist API format
   # No need for any indirection here. We're never going to pair the model
@@ -10,68 +11,68 @@ defmodule Chrello.ModelTest do
   setup do
     list = Chrello.TestData.Load.list()
     tasks = Chrello.TestData.Load.tasks()
-    cards = Card.get_cards_from_task_list(Jason.decode!(tasks))
-    board = Board.new(Jason.decode!(list), cards)
-    %{cards: cards, board: board}
+    tasks = Task.get_tasks_from_task_list(Jason.decode!(tasks))
+    checklist = Checklist.new(Jason.decode!(list), tasks)
+    %{tasks: tasks, checklist: checklist}
   end
 
-  test "get card tree from 'tasks.json'", %{cards: cards} do
-    # 3 cards @ top level
-    [card1 | [_ | [card3 | _]]] = cards
+  test "get task tree from 'tasks.json'", %{tasks: tasks} do
+    # 3 tasks @ top level
+    [task1 | [_ | [task3 | _]]] = tasks
 
-    assert(is_list(cards))
-    assert(length(cards) == 3)
-    assert(is_struct(card1, Card))
-    assert(card1.title == "task1")
+    assert(is_list(tasks))
+    assert(length(tasks) == 3)
+    assert(is_struct(task1, Task))
+    assert(task1.title == "task1")
 
-    assert(is_list(card1.children))
-    assert(Enum.empty?(card1.children))
-    assert(length(card3.children) == 3)
+    assert(is_list(task1.children))
+    assert(Enum.empty?(task1.children))
+    assert(length(task3.children) == 3)
 
-    card3_3_1 = card3[2][0]
-    assert(length(card3_3_1.children) == 2)
-    card3_3_1_1 = card3_3_1[0]
-    assert(card3_3_1_1.title == "task 3.3.1.1")
+    task3_3_1 = task3[2][0]
+    assert(length(task3_3_1.children) == 2)
+    task3_3_1_1 = task3_3_1[0]
+    assert(task3_3_1_1.title == "task 3.3.1.1")
   end
 
-  test "get board from checkvist List json", %{board: board} do
-    assert(board.id == 774_394)
-    assert(board.name == "devtest")
-    assert(board.current_path == [])
-    assert(is_list(board.cards))
+  test "get checklist from checkvist List json", %{checklist: checklist} do
+    assert(checklist.id == 774_394)
+    assert(checklist.name == "devtest")
+    assert(checklist.current_path == [])
+    assert(is_list(checklist.tasks))
 
-    nested_card = board[1][0]
+    nested_task = checklist[1][0]
 
-    assert(is_struct(nested_card))
-    assert(nested_card.title == "task2.1")
+    assert(is_struct(nested_task))
+    assert(nested_task.title == "task2.1")
   end
 
-  test "move card (at board top level)", %{board: board} do
-    board_updated = Board.move(board, [0], [1])
+  test "move task (at checklist top level)", %{checklist: checklist} do
+    checklist_updated = Checklist.move(checklist, [0], [1])
 
-    assert(Enum.count(board.cards) == Enum.count(board_updated.cards))
-    assert(board_updated[0].id == board[1].id)
-    assert(board_updated[1].id == board[0].id)
+    assert(Enum.count(checklist.tasks) == Enum.count(checklist_updated.tasks))
+    assert(checklist_updated[0].id == checklist[1].id)
+    assert(checklist_updated[1].id == checklist[0].id)
   end
 
-  test "move card (withiin same nested card's children)", %{board: board} do
-    board_updated = Board.move(board, [1, 0], [1, 1])
+  test "move task (withiin same nested task's children)", %{checklist: checklist} do
+    checklist_updated = Checklist.move(checklist, [1, 0], [1, 1])
 
-    assert(board_updated != board)
-    assert(Enum.count(board.cards) == Enum.count(board_updated.cards))
-    assert(board_updated[1][0].id == board[1][1].id)
-    assert(board_updated[1][0].id == board[1][1].id)
+    assert(checklist_updated != checklist)
+    assert(Enum.count(checklist.tasks) == Enum.count(checklist_updated.tasks))
+    assert(checklist_updated[1][0].id == checklist[1][1].id)
+    assert(checklist_updated[1][0].id == checklist[1][1].id)
   end
 
-  test "move card (between nested cards' children)", %{board: board} do
-    board_updated = Board.move(board, [1, 0], [0, 0])
+  test "move task (between nested tasks' children)", %{checklist: checklist} do
+    checklist_updated = Checklist.move(checklist, [1, 0], [0, 0])
 
-    assert(board_updated != board)
-    assert(Enum.count(board.cards) == Enum.count(board_updated.cards))
-    assert(length(board_updated[0].children) == 1)
-    assert(length(board_updated[1].children) == 1)
-    assert(board_updated[0][0] == board[1][0])
+    assert(checklist_updated != checklist)
+    assert(Enum.count(checklist.tasks) == Enum.count(checklist_updated.tasks))
+    assert(length(checklist_updated[0].children) == 1)
+    assert(length(checklist_updated[1].children) == 1)
+    assert(checklist_updated[0][0] == checklist[1][0])
   end
 
-  # test "change card contents"
+  # test "change task contents"
 end

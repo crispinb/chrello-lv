@@ -1,6 +1,6 @@
-defmodule Chrello.Model.Card do
+defmodule Chrello.Model.Task do
   @moduledoc """
-  Card struct + functions to convert from Checkvist JSON
+  Task struct + functions to convert from Checkvist JSON
   Tightly coupled to Checkvist as this will never use a
   different backend
   """
@@ -30,28 +30,28 @@ defmodule Chrello.Model.Card do
     __MODULE__.new(%{"id" => id, "content" => content, "children" => []})
   end
 
-  @spec get_cards_from_task_list(list) :: list(__MODULE__.t())
+  @spec get_tasks_from_task_list(list) :: list(__MODULE__.t())
   @doc """
-    From Checkvist's flat json list of tasks, create a tree of cards.
-    The value of the 'children' key is a list of child cards
+    From Checkvist's flat json list of tasks, create a tree of tasks.
+    The value of the 'children' key is a list of child tasks
   """
-  def get_cards_from_task_list(tasks_json) do
+  def get_tasks_from_task_list(tasks_json) do
     lookup = MapUtil.index_list_of_maps_by_key(tasks_json, "id")
 
     tasks_json
     |> Enum.filter(fn task -> task["parent_id"] == 0 end)
-    |> Enum.map(&task_to_card(&1, lookup))
+    |> Enum.map(&task_to_task(&1, lookup))
   end
 
-  defp task_to_card(%{} = task, task_lookup) do
+  defp task_to_task(%{} = task, task_lookup) do
     task = MapUtil.rename_keys(task, %{"tasks" => "children"})
-    children = Enum.map(task["children"], &task_to_card(&1, task_lookup))
+    children = Enum.map(task["children"], &task_to_task(&1, task_lookup))
     __MODULE__.new(%{task | "children" => children})
   end
 
-  defp task_to_card(task_id, task_lookup) do
+  defp task_to_task(task_id, task_lookup) do
     task = task_lookup[task_id]
-    task_to_card(task, task_lookup)
+    task_to_task(task, task_lookup)
   end
 
   # Access
@@ -60,32 +60,32 @@ defmodule Chrello.Model.Card do
   # NB. This is incomplete for get_and_update and pop, neither of which
   # implements Access for non-integer keys
 
-  def fetch(card, key) when is_number(key) do
-    case Enum.at(card.children, key) do
+  def fetch(task, key) when is_number(key) do
+    case Enum.at(task.children, key) do
       nil -> :error
       value -> {:ok, value}
     end
   end
 
-  def fetch(card, key) do
-    {:ok, Map.get(card, key)}
+  def fetch(task, key) do
+    {:ok, Map.get(task, key)}
   end
 
   @impl Access
-  def get_and_update(card, key, f) do
-    value = Enum.at(card.children, key)
+  def get_and_update(task, key, f) do
+    value = Enum.at(task.children, key)
 
     children =
       case f.(value) do
-        {_current_value, new_value} -> List.replace_at(card.children, key, new_value)
-        :pop -> List.delete_at(card.children, key)
+        {_current_value, new_value} -> List.replace_at(task.children, key, new_value)
+        :pop -> List.delete_at(task.children, key)
       end
 
-    {value, %{card | children: children}}
+    {value, %{task | children: children}}
   end
 
   @impl Access
-  def pop(card, key) do
-    List.pop_at(card.children, key)
+  def pop(task, key) do
+    List.pop_at(task.children, key)
   end
 end

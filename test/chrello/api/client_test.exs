@@ -23,22 +23,22 @@ defmodule Chrello.Api.ClientTest do
     {:ok, %{api_token: "token", bypass: bypass}}
   end
 
-  test "get board", %{api_token: token} do
-    {:ok, board} = Client.get_board(1, token)
+  test "get checklist", %{api_token: token} do
+    {:ok, checklist} = Client.get_checklist(1, token)
 
-    assert(board.name == "devtest")
-    assert(board.id == 774_394)
+    assert(checklist.name == "devtest")
+    assert(checklist.id == 774_394)
   end
 
-  test "get board, network unavailable", %{api_token: token, bypass: bypass} do
+  test "get checklist, network unavailable", %{api_token: token, bypass: bypass} do
     Bypass.down(bypass)
 
-    {:network_error, reason} = Client.get_board(1, token)
+    {:network_error, reason} = Client.get_checklist(1, token)
     assert(is_bitstring(reason))
   end
 
-  test "get board, 404 error", %{api_token: token} do
-    {:http_error, {code, _description}} = Client.get_board(2, token)
+  test "get checklist, 404 error", %{api_token: token} do
+    {:http_error, {code, _description}} = Client.get_checklist(2, token)
     assert(code == 404)
   end
 
