@@ -6,6 +6,12 @@ defmodule ChrelloWeb.Plugs.GetUserTest do
   alias ChrelloWeb.Auth.GetUserPlug
   alias Chrello.TestData.Load
 
+  # suppress error logging messing with passing test output
+  # (logs are still output if test fails)
+  # (can alternatively set in test_helper.exs if it's a more general issue)
+  # https://hexdocs.pm/ex_unit/1.12/ExUnit.Case.html#module-log-capture
+  @moduletag capture_log: true
+
   setup %{} do
     bypass = Checkvist.EndpointHelper.bypass_checkvist()
 
