@@ -81,54 +81,38 @@ defmodule Chrello.Model.Checklist do
     [%{name: checklist.name} | elem(crumbs_acc, 0)]
   end
 
-  # TODO: convert to reduction?
   # searches the checklist tree (checklist.tasks plus all task children)
   # for a task with task_id, returning an Access-style path to the task
   # or the empty list if not found
   def path_to_task(%__MODULE__{} = checklist, task_id) do
-    if found_id = Enum.find_index(checklist.tasks, &(&1.id == task_id)) do
-      [found_id]
+    path_to_task(checklist.tasks, {0, []}, task_id)
+  end
+
+  def path_to_task([], _acc, _task_id) do
+    []
+  end
+
+  # TODO: 1. multi function heads instead of nested ifs?
+  # TODO: 2 replace with Enum functions?
+  # {0, [0]}
+  # {0, [0, 0]}
+  def path_to_task([task | rest], {index, path}, task_id) do
+    if task.id == task_id do
+      path ++ [index]
     else
-      path_to_task(checklist.tasks, [], task_id)
-    end
-  end
+      child_task_path = path_to_task(task.children, {0, path ++ [index]}, task_id)
 
-  def path_to_task([], acc, _task_id) do
-    IO.inspect([], label: :BASE_CASE)
-    acc
-  end
-
-  def path_to_task([task | rest] = temp, acc, task_id) do
-    IO.inspect(temp, label: :DERIVED_CASE)
-
-    if found_id = Enum.find_index(task.children, &(&1.id == task_id)) do
-      IO.inspect(found_id, label: :FOUND)
-      acc ++ [found_id]
-    else
-      acc ++ path_to_task(rest, acc, task_id)
-    end
-  end
-
-  def zoom_to_task_multi(checklist, task_id) do
-  end
-
-  @doc """
-  If task_id is one of the checklist's top-level tasks,
-  set current_path to point to it.
-  Otherwise ignore
-  """
-  def zoom_to_task(checklist, task_id) do
-    tasks =
-      if Enum.empty?(checklist.current_path),
-        do: checklist.tasks,
-        else: get_in(checklist, checklist.current_path).children
-
-    path_segment =
-      for {task, index} <- Enum.with_index(tasks), task.id == task_id do
-        if task.id == task_id, do: index
+      if child_task_path != [] do
+        child_task_path
+      else
+        path_to_task(rest, {index + 1, path}, task_id)
       end
+    end
+  end
 
-    %{checklist | current_path: checklist.current_path ++ path_segment}
+  def zoom_to_task(checklist, task_id) do
+    path = path_to_task(checklist, task_id)
+    if path != [], do: %__MODULE__{checklist | current_path: path}, else: checklist
   end
 
   @doc """
