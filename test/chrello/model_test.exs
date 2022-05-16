@@ -10,9 +10,14 @@ defmodule Chrello.ModelTest do
 
   setup do
     list = Chrello.TestData.Load.list()
-    tasks = Chrello.TestData.Load.tasks()
-    tasks = Task.get_tasks_from_task_list(Jason.decode!(tasks))
+
+    tasks =
+      Chrello.TestData.Load.tasks()
+      |> Jason.decode!()
+      |> Task.get_tasks_from_task_list()
+
     checklist = Checklist.new(Jason.decode!(list), tasks)
+
     %{tasks: tasks, checklist: checklist}
   end
 
@@ -74,5 +79,49 @@ defmodule Chrello.ModelTest do
     assert(checklist_updated[0][0] == checklist[1][0])
   end
 
-  # test "change task contents"
+  test "zooming to task adds correct path to checklist", %{checklist: checklist} do
+    zoomed_checklist = Checklist.zoom_to_task(checklist, 53_838_435)
+    assert(zoomed_checklist.current_path == [1])
+  end
+
+  test "zooming to nonexistent task doesn't change checklist", %{checklist: checklist} do
+    # give checklist a current_path to check we're not just assuming []
+    checklist = %{checklist | current_path: [1]}
+    zoomed_checklist = Checklist.zoom_to_task(checklist, 1)
+    assert(zoomed_checklist == checklist)
+  end
+
+  test "zooming twice adds correct path to checklist", %{checklist: checklist} do
+    zoomed_checklist =
+      checklist
+      |> Checklist.zoom_to_task(53_838_435)
+      |> Checklist.zoom_to_task(53_838_434)
+
+    assert(zoomed_checklist.current_path == [1, 0])
+  end
+
+  test "zooming multiple levels at once adds correct path to checklist", %{checklist: checklist} do
+    zoomed_checklist = checklist |> Checklist.zoom_to_task(53_838_434)
+    assert(zoomed_checklist.current_path == [1, 0])
+  end
+
+  test "one level zoom generates correct board", %{checklist: checklist} do
+    zoomed_checklist = Checklist.zoom_to_task(checklist, 53_838_435)
+    board = Checklist.board(zoomed_checklist)
+
+    assert(Enum.count(board.columns) == 2)
+    assert(board.name == "/devtest/task2")
+  end
+
+  test "two level zoom generates correct board", %{checklist: checklist} do
+    zoomed_checklist =
+      checklist
+      |> Checklist.zoom_to_task(53_894_527)
+      |> Checklist.zoom_to_task(54_455_641)
+
+    board = Checklist.board(zoomed_checklist)
+
+    assert(Enum.count(board.columns) == 1)
+    assert(board.name == "/devtest/task3/task3.2")
+  end
 end

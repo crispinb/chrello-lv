@@ -54,9 +54,7 @@ defmodule Chrello.MixProject do
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
       # dev iex was running tests - something to do with this?
       {:mix_test_watch, "~> 1.1", only: [:dev], runtime: false},
-      # lettuce alternative:
       {:exsync, "~> 0.2.4", only: :dev},
-      # {:lettuce, "~> 0.2.0", only: :dev},
       {:credo, "~>1.6", only: [:dev, :test], runtime: false}
     ]
   end

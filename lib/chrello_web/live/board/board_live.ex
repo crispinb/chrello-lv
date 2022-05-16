@@ -27,7 +27,19 @@ defmodule ChrelloWeb.BoardLive do
     {:halt, socket}
   end
 
-  def handle_params(%{"board_id" => id}, _uri, socket) do
+  def handle_params(%{"task" => task_id} = params, _uri, %{assigns: %{checklist: checklist}} = socket) do
+
+    checklist = Checklist.zoom_to_task(checklist, String.to_integer(task_id))
+    socket = assign_checklist(socket, checklist)
+    {:noreply, socket}
+  end
+
+  # TODO: to get this working, we need a 'back' live nav (can/should? we hijack back button)
+  def handle_params(params, _uri, %{assigns: %{checklist: checklist}} = socket) do
+    {:noreply, assign_checklist(socket, checklist)}
+  end
+
+  def handle_params(%{"board_id" => id} = params, _uri, socket) do
     {:noreply, assign_checklist(socket, String.to_integer(id))}
   end
 

@@ -1,7 +1,7 @@
 <%= if @board do %>
   <h1>Board: <%= @board.name %></h1>
   <div id="columns-container" class="flex h-screen space-x-10 p-5">
-    <%= for {col, col_index} <- Enum.with_index(@board.cards) do %>
+    <%= for {col, col_index} <- Enum.with_index(@board.columns) do %>
       <div id={"column-container-#{col_index}"} class="flex-col w-52 bg-slate-100">
         <%= live_patch("#{col.title} (click to zoom)",
           to: Routes.board_path(@socket, :show, @board.id, task: col.id)
