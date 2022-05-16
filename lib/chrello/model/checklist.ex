@@ -81,37 +81,34 @@ defmodule Chrello.Model.Checklist do
     [%{name: checklist.name} | elem(crumbs_acc, 0)]
   end
 
-  # searches the checklist tree (checklist.tasks plus all task children)
+  # searches the checklist tree (depth-first)
   # for a task with task_id, returning an Access-style path to the task
   # or the empty list if not found
-  def path_to_task(%__MODULE__{} = checklist, task_id) do
-    path_to_task(checklist.tasks, {0, []}, task_id)
+  # TODO: 2 replace recurse with Enum functions? (this is basically a reduction)
+  defp task_path(%__MODULE__{} = checklist, task_id) do
+    Enum.reverse(do_task_path(checklist.tasks, {0, []}, task_id))
   end
 
-  def path_to_task([], _acc, _task_id) do
+  defp do_task_path([], _acc, _task_id) do
     []
   end
 
-  # TODO: 1. multi function heads instead of nested ifs?
-  # TODO: 2 replace with Enum functions?
-  # {0, [0]}
-  # {0, [0, 0]}
-  def path_to_task([task | rest], {index, path}, task_id) do
-    if task.id == task_id do
-      path ++ [index]
-    else
-      child_task_path = path_to_task(task.children, {0, path ++ [index]}, task_id)
+  defp do_task_path([%{id: task_id} | _rest], {index, path}, task_id) do
+    [index | path]
+  end
 
-      if child_task_path != [] do
-        child_task_path
-      else
-        path_to_task(rest, {index + 1, path}, task_id)
-      end
+  defp do_task_path([task | rest], {index, path}, task_id) do
+    maybe_found = do_task_path(task.children, {0, [index | path]}, task_id)
+
+    if maybe_found != [] do
+      maybe_found
+    else
+      do_task_path(rest, {index + 1, path}, task_id)
     end
   end
 
   def zoom_to_task(checklist, task_id) do
-    path = path_to_task(checklist, task_id)
+    path = task_path(checklist, task_id)
     if path != [], do: %__MODULE__{checklist | current_path: path}, else: checklist
   end
 
