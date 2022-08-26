@@ -1,5 +1,12 @@
-# Chrello
 
+# Abandoned
+To be replaced by https://github.com/crispinb/chrello
+
+
+-----
+
+
+# Chrello
 ## Purpose
 This has 2 aims: 
 1. for me to learn a bit more about Phoenix LiveView
@@ -14,11 +21,11 @@ Given the difficulty (inherent to software it seems) of keeping ambitions in che
 ## FAQ
 * *isn't "Chrello" a ridiculous name*?
 
-    Yes but I am English so it's cultural.
+    Yes but I am English so this is a matter of  cultural identity.
     
 * *mightn't the name be a trademark violation*?
 
-    Probably but I'm also Australianish so that's also cultural.
+    Probably but I'm also Australianish so .. cultural identity again.
 
 ## Refs
 * [Checkvist API docs](https://checkvist.com/auth/api)
